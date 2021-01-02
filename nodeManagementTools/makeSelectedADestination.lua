@@ -3,7 +3,7 @@
         local botTools = require ("./AM-Tools/botTools")
         local compTools = require ("./AM-Tools/compTools")
     --assertions
-        if compTools.givenScriptIsRunning("TravelBot/toggleRender.lua") == false then
+        if compTools.givenScriptIsRunning("AM-TravelBot/toggleRender.lua") == false then
             log("&7[&6NodeManagement&7]&f Please render nodes with toggleRender.lua before modifying them")
             return 0
         end
