@@ -1,7 +1,7 @@
 -- initialization
     -- import dependencies
     local json = require ("./json.lua/json")
-    local botTools = require ("./AM-tools/botTools")
+    local botTools = require ("./AM-Tools/botTools")
     local nodeTools = require "nodeTools"
 
     

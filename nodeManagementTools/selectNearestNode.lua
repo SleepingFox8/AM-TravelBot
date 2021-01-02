@@ -1,7 +1,7 @@
 --initialization
 -- import dependencies
-        local botTools = require ("./AM-tools/botTools")
-        local compTools = require ("./AM-tools/compTools")
+        local botTools = require ("./AM-Tools/botTools")
+        local compTools = require ("./AM-Tools/compTools")
     --assertions
         if compTools.givenScriptIsRunning("TravelBot/toggleRender.lua") == false then
             log("&7[&6NodeManagement&7]&f Please render nodes with toggleRender.lua before modifying them")

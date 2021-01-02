@@ -1,6 +1,6 @@
 --initialization
     -- import dependencies
-        local botTools = require ("./AM-tools/botTools")
+        local botTools = require ("./AM-Tools/botTools")
         local nodeTools = require "nodeTools"
         
         local travelBot = { _version = "0.0.0" }

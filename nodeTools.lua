@@ -1,8 +1,8 @@
 --initialization
     -- import dependencies
         local json = require ("./json.lua/json")
-        local botTools = require ("./AM-tools/botTools")
-        local compTools = require ("./AM-tools/compTools")
+        local botTools = require ("./AM-Tools/botTools")
+        local compTools = require ("./AM-Tools/compTools")
 
         --initialize "class" object
             local nodeTools = { _version = "0.0.0" }
