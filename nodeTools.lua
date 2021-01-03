@@ -29,7 +29,7 @@
                     FUNC.dirString = "nodeData/multiplayer/" .. getWorld().ip .. "/" .. FUNC.player.dimension.name .. "/"
                 end
 
-                FUNC.tokens = botTools.split(FUNC.dirString, ":")
+                FUNC.tokens = compTools.split(FUNC.dirString, ":")
 
             if #FUNC.tokens > 1 then
 
@@ -104,7 +104,7 @@
                     -- update last world data grabbed from
                         GLBL.lastConnectedServerIpForNodes = getWorld().ip
                         GLBL.lastDimensionForNodes = FUNC.player.dimension.name
-                    return json.decode(botTools.readAll(nodeTools.pathToCurrentStorageDir() .. "nodes.json"))
+                    return json.decode(compTools.readAll(nodeTools.pathToCurrentStorageDir() .. "nodes.json"))
                 else
                     return GLBL.nodes
                 end
@@ -131,7 +131,7 @@
         --destinations
             function nodeTools.loadDestinationsFromJSON()
                 nodeTools.ensureFileExists(nodeTools.pathToCurrentStorageDir() .. "destinations.json")
-                return json.decode(botTools.readAll(nodeTools.pathToCurrentStorageDir() .. "destinations.json"))
+                return json.decode(compTools.readAll(nodeTools.pathToCurrentStorageDir() .. "destinations.json"))
             end
 
             function nodeTools.getDestNameToNodeId(table)
@@ -167,8 +167,8 @@
                 FUNC.x = GLBL.nodes[FUNC.node].x
                 FUNC.y = GLBL.nodes[FUNC.node].y
                 FUNC.z = GLBL.nodes[FUNC.node].z
-                if botTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z) < FUNC.nearestNodeDistance then
-                    FUNC.nearestNodeDistance = botTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z)
+                if compTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z) < FUNC.nearestNodeDistance then
+                    FUNC.nearestNodeDistance = compTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z)
                     FUNC.nearestNodeName = FUNC.node
                 end
             end
@@ -201,8 +201,8 @@
 
                     FUNC.expandableCount = FUNC.expandableCount + 1
 
-                    if botTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z) < FUNC.nearestExpandableRailDistance then
-                        FUNC.nearestExpandableRailDistance = botTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z)
+                    if compTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z) < FUNC.nearestExpandableRailDistance then
+                        FUNC.nearestExpandableRailDistance = compTools.playerDistanceFrom(FUNC.x,FUNC.y,FUNC.z)
                         FUNC.nearestExpandableRail = FUNC.node
                     end
                 end
@@ -238,12 +238,12 @@
 
                     -- only consider draw lines that have at least one node within GLBL.minNodeDistance to the player.
                     -- nodeTools.closestPointOnLineToPlayer() is computationally intensive on super large worlds
-                    if botTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or botTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
+                    if compTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or compTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
                    
                         FUNC.ntX, FUNC.ntY, FUNC.ntZ = nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
 
-                        if botTools.playerDistanceFrom(FUNC.ntX, FUNC.ntY, FUNC.ntZ) < FUNC.nearestPathPointDistance then
-                            FUNC.nearestPathPointDistance = botTools.playerDistanceFrom(FUNC.ntX, FUNC.ntY, FUNC.ntZ)
+                        if compTools.playerDistanceFrom(FUNC.ntX, FUNC.ntY, FUNC.ntZ) < FUNC.nearestPathPointDistance then
+                            FUNC.nearestPathPointDistance = compTools.playerDistanceFrom(FUNC.ntX, FUNC.ntY, FUNC.ntZ)
                             FUNC.nearestPathPoint = {FUNC.ntX, FUNC.ntY, FUNC.ntZ}
                             FUNC.nodeA = FUNC.node
                             FUNC.nodeB = FUNC.neighbor
@@ -500,9 +500,9 @@
                     FUNC.lx,FUNC.ly,FUNC.lz = nodeTools.pointBetweenPointsAtHorizontalDistance(x1,y1,z1, x2,y2,z2, FUNC.lowerPoint)
                     FUNC.hx,FUNC.hy,FUNC.hz = nodeTools.pointBetweenPointsAtHorizontalDistance(x1,y1,z1, x2,y2,z2, FUNC.higherPoint)
 
-                    FUNC.lowPointDistance = botTools.playerDistanceFrom(FUNC.lx,FUNC.ly,FUNC.lz)
-                    FUNC.midPointDistance = botTools.playerDistanceFrom(FUNC.mx,FUNC.my,FUNC.mz)
-                    FUNC.highPointDistance = botTools.playerDistanceFrom(FUNC.hx,FUNC.hy,FUNC.hz)
+                    FUNC.lowPointDistance = compTools.playerDistanceFrom(FUNC.lx,FUNC.ly,FUNC.lz)
+                    FUNC.midPointDistance = compTools.playerDistanceFrom(FUNC.mx,FUNC.my,FUNC.mz)
+                    FUNC.highPointDistance = compTools.playerDistanceFrom(FUNC.hx,FUNC.hy,FUNC.hz)
 
                 --midpoint is closest
                     if FUNC.midPointDistance < FUNC.lowPointDistance and FUNC.midPointDistance < FUNC.highPointDistance then
@@ -543,7 +543,7 @@
                     local FUNC = {}
 
             nodeTools.ensureFileExists(nodeTools.pathToCurrentStorageDir() .. "zones.json")
-            return json.decode(botTools.readAll(nodeTools.pathToCurrentStorageDir() .. "zones.json"))
+            return json.decode(compTools.readAll(nodeTools.pathToCurrentStorageDir() .. "zones.json"))
         end
 
         -- returns table containing every pixel in a polyZone
@@ -871,7 +871,7 @@
                     FUNC.nX = GLBL.nodes[FUNC.node].x
                     FUNC.nY = GLBL.nodes[FUNC.node].y
                     FUNC.nZ = GLBL.nodes[FUNC.node].z
-                FUNC.distanceToNode = botTools.distanceBetweenPoints(x,y,z, FUNC.nX,FUNC.nY,FUNC.nZ)
+                FUNC.distanceToNode = compTools.distanceBetweenPoints(x,y,z, FUNC.nX,FUNC.nY,FUNC.nZ)
                 if FUNC.distanceToNode < FUNC.nearestNodeDistance then
                     FUNC.nearestNodeDistance = FUNC.distanceToNode
                     FUNC.nearestNodeName = node

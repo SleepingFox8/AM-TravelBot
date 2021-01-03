@@ -128,7 +128,7 @@
                                 FUNC.color = color
                                 FUNC.blockSize = blockSize
 
-                        if botTools.playerhorizontalSquareDistanceBetween(FUNC.x,FUNC.z) <= SCRIPT.renderDistance then
+                        if compTools.playerhorizontalSquareDistanceBetween(FUNC.x,FUNC.z) <= SCRIPT.renderDistance then
                             SCRIPT.frameBuffer[#SCRIPT.frameBuffer+1]= {
                                 ["x"] = FUNC.x,
                                 ["y"] = FUNC.y,
@@ -148,7 +148,7 @@
                             FUNC.color = color
 
                     for key,value in pairs(FUNC.listOfPoints) do 
-                        if botTools.playerhorizontalSquareDistanceBetween(FUNC.listOfPoints[key][1],FUNC.listOfPoints[key][3]) <= SCRIPT.renderDistance then
+                        if compTools.playerhorizontalSquareDistanceBetween(FUNC.listOfPoints[key][1],FUNC.listOfPoints[key][3]) <= SCRIPT.renderDistance then
                             prepairBlockAt(FUNC.listOfPoints[key][1],FUNC.listOfPoints[key][2],FUNC.listOfPoints[key][3], FUNC.color, 1)
                         end
                     end
@@ -179,11 +179,11 @@
 
                 -- render nearby nodes and paths
                     FUNC.drawnLines = {}
-                    FUNC.selectedNodeName = botTools.readAll("nodeManagementTools/selectedNode.txt")
+                    FUNC.selectedNodeName = compTools.readAll("nodeManagementTools/selectedNode.txt")
                     -- for each node
                     for key,value in pairs(GLBL.nodes) do
                         FUNC.node = key
-                        if botTools.playerhorizontalSquareDistanceBetween(GLBL.nodes[FUNC.node].x, GLBL.nodes[FUNC.node].z) <= SCRIPT.renderDistance then
+                        if compTools.playerhorizontalSquareDistanceBetween(GLBL.nodes[FUNC.node].x, GLBL.nodes[FUNC.node].z) <= SCRIPT.renderDistance then
 
                             -- determine block color
                                 if GLBL.nodes[FUNC.node].pathType == "normal" then
@@ -218,9 +218,9 @@
                                     -- only consider draw lines that have at least one node within GLBL.minNodeDistance to the player.
                                     -- nodeTools.pointBetweenPointsAtHorizontalDistance() is computationally intensive on super large worlds
                                     GLBL.minNodeDistance = 1000
-                                    if botTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or botTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
+                                    if compTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or compTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
                                         FUNC.lbX, FUNC.lbY, FUNC.lbZ = nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
-                                        if botTools.playerhorizontalSquareDistanceBetween(FUNC.lbX, FUNC.lbZ) <= SCRIPT.renderDistance then
+                                        if compTools.playerhorizontalSquareDistanceBetween(FUNC.lbX, FUNC.lbZ) <= SCRIPT.renderDistance then
                                             FUNC.listOfPoints = compTools.Bresenham3D(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
                                             -- check what color line should be
                                                 -- iceroad

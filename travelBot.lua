@@ -53,7 +53,7 @@
 
         -- find the distance between two GLBL.nodes
         function distanceBetweenNodes(node, goal)
-            return botTools.distanceBetweenPoints(GLBL.nodes[goal].x, GLBL.nodes[goal].y, GLBL.nodes[goal].z, GLBL.nodes[node].x, GLBL.nodes[node].y, GLBL.nodes[node].z)
+            return compTools.distanceBetweenPoints(GLBL.nodes[goal].x, GLBL.nodes[goal].y, GLBL.nodes[goal].z, GLBL.nodes[node].x, GLBL.nodes[node].y, GLBL.nodes[node].z)
         end
 
         function reconstruct_path(cameFrom, current)
@@ -72,7 +72,7 @@
                     FUNC.index = FUNC.index + 1
             end
 
-            botTools.reverse(FUNC.total_path)
+            compTools.reverse(FUNC.total_path)
 
             return FUNC.total_path
         end
@@ -279,7 +279,7 @@
             end
         end
 
-        FUNC.namedDestinations = botTools.sortTableByKeys(FUNC.namedDestinations)
+        FUNC.namedDestinations = compTools.sortTableByKeys(FUNC.namedDestinations)
 
         return FUNC.namedDestinations
     end

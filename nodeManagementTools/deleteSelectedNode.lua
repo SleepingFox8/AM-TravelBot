@@ -22,7 +22,7 @@
     --Stores variables for just MAIN function
         local MAIN = {}
 
-    GLBL.selectedNodeId = botTools.readAll("nodeManagementTools/selectedNode.txt")
+    GLBL.selectedNodeId = compTools.readAll("nodeManagementTools/selectedNode.txt")
     GLBL.nodes = nodeTools.loadNodesfromJSON()
 
     -- remove selectedNode's neighbors connections to selectedNode

@@ -115,7 +115,7 @@
         else
 
             -- prompt player to pick destination
-                SCRIPT.namedDestinations = botTools.sortTableByKeys(SCRIPT.destNameToNodeId)
+                SCRIPT.namedDestinations = compTools.sortTableByKeys(SCRIPT.destNameToNodeId)
                 SCRIPT.target = prompt("Enter destination to travel to: ", "choice", table.unpack(SCRIPT.namedDestinations))
 
             if SCRIPT.target ~= nil then

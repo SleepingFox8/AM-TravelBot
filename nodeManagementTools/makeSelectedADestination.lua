@@ -25,7 +25,7 @@
     MAIN.nodeIdToDestName = nodeTools.loadDestinationsFromJSON()
     MAIN.destNameToNodeId = nodeTools.getDestNameToNodeId(MAIN.nodeIdToDestName)
 
-    GLBL.selectedNodeId = botTools.readAll("nodeManagementTools/selectedNode.txt")
+    GLBL.selectedNodeId = compTools.readAll("nodeManagementTools/selectedNode.txt")
     GLBL.nodes = nodeTools.loadNodesfromJSON()
 
     MAIN.newDestName = prompt("Renaming node \"" .. GLBL.selectedNodeId .. "\". Enter new name: ")

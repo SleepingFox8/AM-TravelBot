@@ -36,7 +36,7 @@
             MAIN.neighbor = key
 
             if MAIN.connectionsAlreadyUsed[MAIN.neighbor .. MAIN.node] == nil then
-                MAIN.totalDistance = MAIN.totalDistance + botTools.distanceBetweenPoints(GLBL.nodes[MAIN.neighbor].x,GLBL.nodes[MAIN.neighbor].y,GLBL.nodes[MAIN.neighbor].z, GLBL.nodes[MAIN.node].x,GLBL.nodes[MAIN.node].y,GLBL.nodes[MAIN.node].z)
+                MAIN.totalDistance = MAIN.totalDistance + compTools.distanceBetweenPoints(GLBL.nodes[MAIN.neighbor].x,GLBL.nodes[MAIN.neighbor].y,GLBL.nodes[MAIN.neighbor].z, GLBL.nodes[MAIN.node].x,GLBL.nodes[MAIN.node].y,GLBL.nodes[MAIN.node].z)
                 MAIN.connectionsAlreadyUsed[MAIN.node .. MAIN.neighbor] = true
             end
         end

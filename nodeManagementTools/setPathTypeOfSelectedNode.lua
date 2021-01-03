@@ -26,7 +26,7 @@
         local MAIN = {}
 
     GLBL.nodes = nodeTools.loadNodesfromJSON()
-    GLBL.selectedNodeId = botTools.readAll("nodeManagementTools/selectedNode.txt")
+    GLBL.selectedNodeId = compTools.readAll("nodeManagementTools/selectedNode.txt")
 
     GLBL.nodes[GLBL.selectedNodeId].pathType = GLBL.selectedPathType
 

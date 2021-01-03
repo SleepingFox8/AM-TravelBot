@@ -18,7 +18,7 @@
         local SCRIPT = {}
 
 -- main program
-    GLBL.selectedNodeId = botTools.readAll("nodeManagementTools/selectedNode.txt")
+    GLBL.selectedNodeId = compTools.readAll("nodeManagementTools/selectedNode.txt")
     GLBL.nodes = nodeTools.loadNodesfromJSON()
 
     if nodeTools.nodeCloseby() then
