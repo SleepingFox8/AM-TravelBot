@@ -15,7 +15,10 @@ TravelBot is aware of paths with different travel speeds (provided the user mark
 These paths are green and indicate a normal path that a bot can walk on. By sprinting on these paths, players can travel up to 5.6 m/s.
 
 ### Iceroad
-These paths are blue and indicate a packed ice floor with a 2 block high ceiling. By sprint jumping on these paths, players can travel up to 16.9 m/s.
+These paths are blue and indicate a packed ice floor WITH a 2 block high ceiling. By sprint jumping on these paths, players can travel up to 16.9 m/s.
+
+### Roofless Iceroad
+These paths are light-blue and indicate a packed ice floor WITHOUT a 2 block high ceiling. By sprint jumping on these paths, players can travel up to 9.23 m/s.
 
 ### Rail
 These paths are grey and indicate a minecart rail line. This path type is currently used for analytics rather than a different method of travel. As such, these are traveled in the same manner as normal paths.
