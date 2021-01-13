@@ -66,7 +66,7 @@ if they intend to notate paths of their own, users should also use Advanced Macr
 
 ### Path notation
 
-``toggleRender.lua`` should be enabled at least once before using any path notation tools.
+``toggleRender.lua`` should be running before using any path notation tools.
 
 The names of the ``.lua`` files in [nodeManagementTools/](nodeManagementTools/) correspond with creating, modifying, and removing nodes
 
