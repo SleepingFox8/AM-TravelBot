@@ -82,3 +82,24 @@ The names of the ``.lua`` files in [nodeManagementTools/](nodeManagementTools/) 
 - ``selectPathType.lua`` toggles between path types used during the creation of any new nodes
 - ``setPathTypeOfSelectedNode.lua`` changes the path type of the selected node to the selected path type
 - ``injectNodeInClosestPath.lua`` injects a node at the closest point in any path to the player if it is less then 10m away
+
+## Importing TravelBot Into Other Bots
+
+You can add TravelBot to your repository as a git submodule by using the command ``git submodule add https://github.com/SleepingFox8/AM-TravelBot``. This will import the latest version of this repository into your github rebository as a subdirectory.
+
+From there you can import TravelBot to your own ``.lua`` scripts via:
+
+```lua
+travelBot = require ("AM-TravelBot/travelBot")
+```
+
+Library functrions can be called like so:
+
+```lua
+-- TravelBot nodeID of certain destination
+wheatFarmStartPoint = "0x242A348118D1503C9BA47C7F505E99D2"
+
+travelBot.travelTo(wheatFarmStartPoint)
+```
+
+If this repo updates, your repo's submodule will not update automatically. To update your repository's submodule, ``cd`` into your submodule's directory and run ``git pull origin master``.
