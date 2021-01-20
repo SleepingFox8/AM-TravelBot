@@ -37,6 +37,6 @@
     -- delete selected node
         GLBL.nodes[GLBL.selectedNodeId] = nil
 
-        log("&7[&6NodeManagement&7]§f deleted " .. GLBL.selectedNodeId)
+        log("&7[&6NodeManagement&7]§f Deleted node: " .. GLBL.selectedNodeId)
 
     nodeTools.saveNodesToJSON()

@@ -29,7 +29,10 @@
     GLBL.nodes = nodeTools.loadNodesfromJSON()
 
     MAIN.newDestName = prompt("Renaming node \"" .. GLBL.selectedNodeId .. "\". Enter new name: ")
-    if MAIN.destNameToNodeId[MAIN.newDestName] ~= nil then
+
+    if MAIN.newDestName == nil then
+        log("&7[&6NodeManagement&7]§f No destination name given. Canceling destination assignment...")
+    elseif MAIN.destNameToNodeId[MAIN.newDestName] ~= nil then
         log("&7[&6NodeManagement&7]§f That destination name is already in use...")
     else
         nodeTools.assignNodeDestinationName(GLBL.selectedNodeId, MAIN.newDestName)
