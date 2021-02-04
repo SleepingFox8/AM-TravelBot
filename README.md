@@ -93,7 +93,7 @@ From there you can import TravelBot to your own ``.lua`` scripts via:
 travelBot = require ("AM-TravelBot/travelBot")
 ```
 
-Library functrions can be called like so:
+Library functions can be called like so:
 
 ```lua
 -- TravelBot nodeID of certain destination
