@@ -291,7 +291,7 @@
         -- MAIN.polyZones = nodeTools.getPolyZones()
         -- SCRIPT.polyPixels = nodeTools.getPolyPixels(MAIN.polyZones["zone1"])
 
-    GLBL.zoneData = nodeTools.getZoneData()
+    -- GLBL.zoneData = nodeTools.getZoneData()
     GLBL.nodes = nodeTools.loadNodesfromJSON()
 
     -- initialize GUI table
@@ -319,25 +319,25 @@
                         hud3D.clearAll()
                     renderBlocks()
                     -- log if player is inside any zones
-                        MAIN.currentNation = false
-                        for key,value in pairs(GLBL.zoneData) do
-                            MAIN.zone = key
-                            if nodeTools.playerInZone(MAIN.zone, GLBL.zoneData) then
-                                MAIN.currentNation = MAIN.zone
-                            end
-                        end
-                        if MAIN.currentNation == false then
-                            -- log("player not in any nation")
-                            MAIN.currentNation = "Unknown"
-                        end
-                        -- render nation as text in top left of screen
-                            -- erase old render if it was rendered
-                                if GLBL.GUI.nation ~= nil then
-                                    GLBL.GUI.nation.disableDraw()
-                                end
+                        -- MAIN.currentNation = false
+                        -- for key,value in pairs(GLBL.zoneData) do
+                        --     MAIN.zone = key
+                        --     if nodeTools.playerInZone(MAIN.zone, GLBL.zoneData) then
+                        --         MAIN.currentNation = MAIN.zone
+                        --     end
+                        -- end
+                        -- if MAIN.currentNation == false then
+                        --     -- log("player not in any nation")
+                        --     MAIN.currentNation = "Unknown"
+                        -- end
+                        -- -- render nation as text in top left of screen
+                        --     -- erase old render if it was rendered
+                        --         if GLBL.GUI.nation ~= nil then
+                        --             GLBL.GUI.nation.disableDraw()
+                        --         end
                         
-                            GLBL.GUI.nation = hud2D.newText("Current location: " .. MAIN.currentNation, 5, MAIN.drawn)
-                            GLBL.GUI.nation.enableDraw()
+                        --     GLBL.GUI.nation = hud2D.newText("Current location: " .. MAIN.currentNation, 5, MAIN.drawn)
+                        --     GLBL.GUI.nation.enableDraw()
 
                     sleep(100)
                 end
