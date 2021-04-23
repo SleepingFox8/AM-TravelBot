@@ -579,6 +579,11 @@
                 FUNC.i = key
 
                 FUNC.name = FUNC.gitZone["features"][FUNC.i]["name"]
+                if #FUNC.gitZone["features"][FUNC.i]["polygon"] ~= 1 then
+                    log(FUNC.name)
+                    log(#FUNC.gitZone["features"][FUNC.i]["polygon"])
+                end
+                
                 FUNC.polygon = FUNC.gitZone["features"][FUNC.i]["polygon"][1]
 
                 FUNC.useableZones[FUNC.name] = FUNC.polygon
@@ -595,16 +600,23 @@
             -- if server is CivClassics
                 -- download and parse public nation data
 
-                    FUNC.fileString = getFileStringFromURL("https://raw.githubusercontent.com/ccmap/data/master/land_claims.civmap.json")
+                    -- FUNC.fileString = getFileStringFromURL("https://raw.githubusercontent.com/ccmap/data/master/land_claims.civmap.json")
+                    log("downloading zones")
+                    FUNC.fileString = getFileStringFromURL("https://raw.githubusercontent.com/SleepingFox8/data/master/land_claims.civmap.json")
+
+                    log("parsing git zones")
                     FUNC.useableZones = formatGitZonesToUseable(json.decode(FUNC.fileString))
+                    log("done parsing git")
 
-                    FUNC.zoneString = json.encode(FUNC.useableZones)
+                    -- FUNC.zoneString = json.encode(FUNC.useableZones)
 
-                    -- write file
-                        local file = io.open("useableZones.json", "wb")
-                        file:write(FUNC.zoneString)
-                        file:close()
-                    log("saved zone file")
+                    -- -- write file
+                    --     local file = io.open("useableZones.json", "wb")
+                    --     file:write(FUNC.zoneString)
+                    --     file:close()
+                    -- log("saved zone file")
+
+                    return FUNC.useableZones
                                     
 
             -- else
