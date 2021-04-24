@@ -343,7 +343,7 @@
                 end
                 -- clear all rendered
                     hud3D.clearAll()
-                    GLBL.GUI.nation.disableDraw()
+                    -- GLBL.GUI.nation.disableDraw()
 
                 log("&7[&6ToggleRender&7]§f rendering engine stopped")
 
@@ -365,5 +365,5 @@
 
             -- clear all rendered
                 hud3D.clearAll()
-                GLBL.GUI.nation.disableDraw()
+                -- GLBL.GUI.nation.disableDraw()
         end
