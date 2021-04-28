@@ -1,10 +1,10 @@
 -- initialization
     -- import dependencies
-        json = require ("./json.lua/json")
-        botTools = require ("./AM-Tools/botTools")
-        compTools = require ("./AM-Tools/compTools")
-        nodeTools = require "nodeTools"
-        travelBot = require "travelBot"
+        local json = require ("./json.lua/json")
+        local botTools = require ("./AM-Tools/botTools")
+        local compTools = require ("./AM-Tools/compTools")
+        local nodeTools = require "nodeTools"
+        local travelBot = require "travelBot"
 
     --initialize GLBL table if needed
         if GLBL == nil then
