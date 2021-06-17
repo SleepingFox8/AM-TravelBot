@@ -1,19 +1,17 @@
 --initialization
-    -- import dependencies
-        json = require ("./json.lua/json")
-        botTools = require ("./AM-Tools/botTools")
-        compTools = require ("./AM-Tools/compTools")
-        nodeTools = require "nodeTools"
-        
-
-    --initialize GLBL table if needed
-        if GLBL == nil then
-            GLBL = {}
-        end
 
     --initialize SCRIPT table
     --Stores global variables for just this script
         local SCRIPT = {}
+
+    -- import dependencies
+        SCRIPT.compTools = require ("./AM-Tools/compTools")
+        SCRIPT.nodeTools = require "nodeTools"
+        
+    --initialize GLBL table if needed
+        if GLBL == nil then
+            GLBL = {}
+        end
 
 -- declare script wide variables
 
@@ -85,8 +83,8 @@
     SCRIPT.frameBuffer = {}
 
     --load destinations
-        SCRIPT.nodeIdToDestName = nodeTools.loadDestinationsFromJSON()
-        -- SCRIPT.destNameToNodeId = nodeTools.getDestNameToNodeId(SCRIPT.nodeIdToDestName)
+        SCRIPT.nodeIdToDestName = SCRIPT.nodeTools.loadDestinationsFromJSON()
+        -- SCRIPT.destNameToNodeId = SCRIPT.nodeTools.getDestNameToNodeId(SCRIPT.nodeIdToDestName)
 
 -- functions
     -- GLBL.rendering
@@ -128,7 +126,7 @@
                                 FUNC.color = color
                                 FUNC.blockSize = blockSize
 
-                        if compTools.playerhorizontalSquareDistanceBetween(FUNC.x,FUNC.z) <= SCRIPT.renderDistance then
+                        if SCRIPT.compTools.playerhorizontalSquareDistanceBetween(FUNC.x,FUNC.z) <= SCRIPT.renderDistance then
                             SCRIPT.frameBuffer[#SCRIPT.frameBuffer+1]= {
                                 ["x"] = FUNC.x,
                                 ["y"] = FUNC.y,
@@ -148,7 +146,7 @@
                             FUNC.color = color
 
                     for key,value in pairs(FUNC.listOfPoints) do 
-                        if compTools.playerhorizontalSquareDistanceBetween(FUNC.listOfPoints[key][1],FUNC.listOfPoints[key][3]) <= SCRIPT.renderDistance then
+                        if SCRIPT.compTools.playerhorizontalSquareDistanceBetween(FUNC.listOfPoints[key][1],FUNC.listOfPoints[key][3]) <= SCRIPT.renderDistance then
                             prepairBlockAt(FUNC.listOfPoints[key][1],FUNC.listOfPoints[key][2],FUNC.listOfPoints[key][3], FUNC.color, 1)
                         end
                     end
@@ -179,11 +177,11 @@
 
                 -- render nearby nodes and paths
                     FUNC.drawnLines = {}
-                    FUNC.selectedNodeName = compTools.readAll("nodeManagementTools/selectedNode.txt")
+                    FUNC.selectedNodeName = SCRIPT.compTools.readAll("nodeManagementTools/selectedNode.txt")
                     -- for each node
                     for key,value in pairs(GLBL.nodes) do
                         FUNC.node = key
-                        if compTools.playerhorizontalSquareDistanceBetween(GLBL.nodes[FUNC.node].x, GLBL.nodes[FUNC.node].z) <= SCRIPT.renderDistance then
+                        if SCRIPT.compTools.playerhorizontalSquareDistanceBetween(GLBL.nodes[FUNC.node].x, GLBL.nodes[FUNC.node].z) <= SCRIPT.renderDistance then
 
                             -- determine block color
                                 if GLBL.nodes[FUNC.node].pathType == "normal" then
@@ -216,23 +214,23 @@
                                 FUNC.neighbor = key
                                 if FUNC.drawnLines[FUNC.neighbor .. FUNC.node] == nil then
                                     -- only consider draw lines that have at least one node within GLBL.minNodeDistance to the player.
-                                    -- nodeTools.pointBetweenPointsAtHorizontalDistance() is computationally intensive on super large worlds
+                                    -- SCRIPT.nodeTools.pointBetweenPointsAtHorizontalDistance() is computationally intensive on super large worlds
                                     GLBL.minNodeDistance = 1000
-                                    if compTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or compTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
-                                        FUNC.lbX, FUNC.lbY, FUNC.lbZ = nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
-                                        if compTools.playerhorizontalSquareDistanceBetween(FUNC.lbX, FUNC.lbZ) <= SCRIPT.renderDistance then
-                                            FUNC.listOfPoints = compTools.Bresenham3D(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
+                                    if SCRIPT.compTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or SCRIPT.compTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
+                                        FUNC.lbX, FUNC.lbY, FUNC.lbZ = SCRIPT.nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
+                                        if SCRIPT.compTools.playerhorizontalSquareDistanceBetween(FUNC.lbX, FUNC.lbZ) <= SCRIPT.renderDistance then
+                                            FUNC.listOfPoints = SCRIPT.compTools.Bresenham3D(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
                                             -- check what color line should be
                                                 -- iceroad
-                                                    if nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "iceroad" then
+                                                    if SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "iceroad" then
                                                         -- iceroad color
                                                             FUNC.pathColor = SCRIPT.colors.blue
                                                 -- roofless iceroad
-                                                    elseif nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "roofless iceroad" then
+                                                    elseif SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "roofless iceroad" then
                                                         -- iceroad color
                                                             FUNC.pathColor = SCRIPT.colors.lightBlue
                                                 -- rail
-                                                    elseif nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "rail" then
+                                                    elseif SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "rail" then
                                                         --rail color
                                                             FUNC.pathColor = SCRIPT.colors.grey
                                                 -- normal
@@ -243,7 +241,7 @@
                                             prepairPoints(FUNC.listOfPoints, FUNC.pathColor)
                                             FUNC.drawnLines[FUNC.node .. FUNC.neighbor] = true
                                             --spawn red block at closest point on all lines to player
-                                                -- FUNC.rbX, FUNC.rbY, FUNC.rbZ = nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
+                                                -- FUNC.rbX, FUNC.rbY, FUNC.rbZ = SCRIPT.nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
                                                 -- prepairBlockAt(FUNC.rbX, FUNC.rbY, FUNC.rbZ, SCRIPT.colors.red, 0.5)
                                         end
                                     end
@@ -251,7 +249,7 @@
                             end
                     end
                 --spawn red block at closest point on line to player
-                    -- FUNC.ppX, FUNC.ppY, FUNC.ppZ, FUNC.ppDistance, FUNC.ppNodeA, FUNC.ppNodeB, FUNC.ppPathType = nodeTools.pathCloseby()
+                    -- FUNC.ppX, FUNC.ppY, FUNC.ppZ, FUNC.ppDistance, FUNC.ppNodeA, FUNC.ppNodeB, FUNC.ppPathType = SCRIPT.nodeTools.pathCloseby()
                     -- if FUNC.ppX ~= false then
                     --     --assign color based on pathType
                     --         if FUNC.ppPathType == "normal" then
@@ -276,7 +274,7 @@
 -- Main Progam
 
     --ensure selectedNode.txt exists (going to read from it later)
-        nodeTools.ensureFileExists("nodeManagementTools/selectedNode.txt")
+        SCRIPT.nodeTools.ensureFileExists("nodeManagementTools/selectedNode.txt")
 
     --initialize MAIN table
     --Stores variables for just MAIN function
@@ -288,18 +286,18 @@
         end
 
     -- generate zone pixels for rendering
-        -- MAIN.polyZones = nodeTools.getPolyZones()
-        -- SCRIPT.polyPixels = nodeTools.getPolyPixels(MAIN.polyZones["zone1"])
+        -- MAIN.polyZones = SCRIPT.nodeTools.getPolyZones()
+        -- SCRIPT.polyPixels = SCRIPT.nodeTools.getPolyPixels(MAIN.polyZones["zone1"])
 
-    -- GLBL.zoneData = nodeTools.getZoneData()
-    GLBL.nodes = nodeTools.loadNodesfromJSON()
+    -- GLBL.zoneData = SCRIPT.nodeTools.getZoneData()
+    GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON()
 
     -- initialize GUI table
         GLBL.GUI = GLBL.GUI or {}
         MAIN.drawn = 5
 
     -- set render state to "hidden" if no rendering engine is already running
-        if compTools.anotherInstanceOfThisScriptIsRunning() == false then
+        if SCRIPT.compTools.anotherInstanceOfThisScriptIsRunning() == false then
             GLBL.toggleRenderState = "hidden"
         end
 
@@ -322,7 +320,7 @@
                         -- MAIN.currentNation = false
                         -- for key,value in pairs(GLBL.zoneData) do
                         --     MAIN.zone = key
-                        --     if nodeTools.playerInZone(MAIN.zone, GLBL.zoneData) then
+                        --     if SCRIPT.nodeTools.playerInZone(MAIN.zone, GLBL.zoneData) then
                         --         MAIN.currentNation = MAIN.zone
                         --     end
                         -- end
@@ -359,7 +357,7 @@
             GLBL.toggleRenderXray = false
             GLBL.toggleRenderState = "hidden"
 
-            compTools.stopOtherInstancesOfThisScript()
+            SCRIPT.compTools.stopOtherInstancesOfThisScript()
 
             log("&7[&6ToggleRender&7]§f paths hidden (rendering engine stopped)")
 
