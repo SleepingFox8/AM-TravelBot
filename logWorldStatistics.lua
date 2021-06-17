@@ -26,23 +26,25 @@
     -- get GLBL.nodes
     GLBL.nodes = nodeTools.loadNodesfromJSON()
 
-    MAIN.totalDistance = 0
-    MAIN.connectionsAlreadyUsed = {}
-    
-    for key,value in pairs(GLBL.nodes) do
-        MAIN.node = key
+    -- get total path distance
+        MAIN.totalDistance = 0
+        MAIN.connectionsAlreadyUsed = {}
+        
+        for key,value in pairs(GLBL.nodes) do
+            MAIN.node = key
 
-        for key,value in pairs(GLBL.nodes[MAIN.node]["connections"]) do
-            MAIN.neighbor = key
+            for key,value in pairs(GLBL.nodes[MAIN.node]["connections"]) do
+                MAIN.neighbor = key
 
-            if MAIN.connectionsAlreadyUsed[MAIN.neighbor .. MAIN.node] == nil then
-                MAIN.totalDistance = MAIN.totalDistance + compTools.distanceBetweenPoints(GLBL.nodes[MAIN.neighbor].x,GLBL.nodes[MAIN.neighbor].y,GLBL.nodes[MAIN.neighbor].z, GLBL.nodes[MAIN.node].x,GLBL.nodes[MAIN.node].y,GLBL.nodes[MAIN.node].z)
-                MAIN.connectionsAlreadyUsed[MAIN.node .. MAIN.neighbor] = true
+                if MAIN.connectionsAlreadyUsed[MAIN.neighbor .. MAIN.node] == nil then
+                    MAIN.totalDistance = MAIN.totalDistance + compTools.distanceBetweenPoints(GLBL.nodes[MAIN.neighbor].x,GLBL.nodes[MAIN.neighbor].y,GLBL.nodes[MAIN.neighbor].z, GLBL.nodes[MAIN.node].x,GLBL.nodes[MAIN.node].y,GLBL.nodes[MAIN.node].z)
+                    MAIN.connectionsAlreadyUsed[MAIN.node .. MAIN.neighbor] = true
+                end
             end
         end
-    end
 
-    log("Distance of all paths (in meters): ", math.floor(MAIN.totalDistance))
+        log("Distance of all paths (in meters): ", math.floor(MAIN.totalDistance))
 
-    MAIN.nearestExpandableRail, MAIN.expandbleRailCount = nodeTools.nearestExpandableRail()
-    log("Expandable rails: ", MAIN.expandbleRailCount)
+    -- display number of expandable rails
+        MAIN.nearestExpandableRail, MAIN.expandbleRailCount = nodeTools.nearestExpandableRail()
+        log("Expandable rails: ", MAIN.expandbleRailCount)
