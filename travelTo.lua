@@ -126,6 +126,16 @@
                             if SCRIPT.target ~= false then
                                 SCRIPT.nodeIdToDestName[SCRIPT.target] = "[Expansion] > Nearest expandable rail"
                                 -- travel to destination
+
+
+                                    -- list the coords
+                                        log("X: " .. GLBL.nodes[SCRIPT.target].x)
+                                        log("Y: " .. GLBL.nodes[SCRIPT.target].y)
+                                        log("Z: " .. GLBL.nodes[SCRIPT.target].z)
+                                        log("Distance: " .. compTools.playerDistanceFrom(GLBL.nodes[SCRIPT.target].x, GLBL.nodes[SCRIPT.target].y, GLBL.nodes[SCRIPT.target].z))
+
+
+
                                     GLBL.travelTo_lastTarget = SCRIPT.target
                                     MAIN.pathTraveled = travelBot.travelTo(SCRIPT.target)
                             else
