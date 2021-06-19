@@ -2,8 +2,9 @@
     -- import dependencies
         local botTools = require ("./AM-Tools/botTools")
         local nodeTools = require "nodeTools"
-        
-        local travelBot = { _version = "0.0.0" }
+        local compTools = require ("./AM-Tools/compTools")
+
+    local travelBot = { _version = "0.0.0" }
     
     --initialize GLBL table if needed
         if GLBL == nil then
