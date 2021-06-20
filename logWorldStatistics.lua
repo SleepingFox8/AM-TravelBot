@@ -1,10 +1,15 @@
 -- initialization
+    -- ensure imports are from file instead of cache
+        local function import(path)
+            package.loaded[path] = nil
+            local imported = require (path)
+            package.loaded[path] = nil
+            return imported
+        end
     -- import dependencies
-    local json = require ("./json.lua/json")
-    local botTools = require ("./AM-Tools/botTools")
-    local nodeTools = require "nodeTools"
-
-    
+        local json = import("./json.lua/json")
+        local compTools = import("./AM-CompTools/compTools")
+        local nodeTools = import"nodeTools"
 
 --initialize GLBL table if needed
     if GLBL == nil then
