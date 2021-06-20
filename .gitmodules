@@ -1,6 +1,3 @@
-[submodule "AM-Tools"]
-	path = AM-Tools
-	url = https://github.com/SleepingFox8/AM-Tools
 [submodule "json.lua"]
 	path = json.lua
 	url = https://github.com/rxi/json.lua
