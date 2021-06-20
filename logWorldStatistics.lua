@@ -8,6 +8,7 @@
         end
     -- import dependencies
         local json = import("./json.lua/json")
+        local compTools = import("./AM-CompTools/compTools")
         local nodeTools = import"nodeTools"
 
 --initialize GLBL table if needed
