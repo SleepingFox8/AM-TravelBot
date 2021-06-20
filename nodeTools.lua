@@ -245,6 +245,7 @@
 
                     -- only consider draw lines that have at least one node within GLBL.minNodeDistance to the player.
                     -- nodeTools.closestPointOnLineToPlayer() is computationally intensive on super large worlds
+                    GLBL.minNodeDistance = 1000
                     if compTools.playerDistanceFrom(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z) < GLBL.minNodeDistance or compTools.playerDistanceFrom(GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z) < GLBL.minNodeDistance then
                    
                         FUNC.ntX, FUNC.ntY, FUNC.ntZ = nodeTools.closestPointOnLineToPlayer(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,      GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
