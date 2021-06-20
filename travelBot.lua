@@ -7,9 +7,9 @@
             return imported
         end
     -- import dependencies
-        local botTools = import("./AM-Tools/botTools")
+        local botTools = import("./AM-BotTools/botTools")
+        local compTools = import("./AM-CompTools/compTools")
         local nodeTools = import"nodeTools"
-        local compTools = import("./AM-Tools/compTools")
 
     local travelBot = { _version = "0.0.0" }
     

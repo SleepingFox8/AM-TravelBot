@@ -7,8 +7,8 @@
             return imported
         end
 -- import dependencies
-        local botTools = import("../AM-Tools/botTools")
-        local compTools = import("../AM-Tools/compTools")
+        local botTools = import("../AM-BotTools/botTools")
+        local compTools = import("../AM-CompTools/compTools")
         local nodeTools = import("../nodeTools")
     --assertions
         if compTools.givenScriptIsRunning("AM-TravelBot/toggleRender.lua") == false then

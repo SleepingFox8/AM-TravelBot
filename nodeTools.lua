@@ -8,8 +8,8 @@
         end
     -- import dependencies
         local json = import("./json.lua/json")
-        local botTools = import("./AM-Tools/botTools")
-        local compTools = import("./AM-Tools/compTools")
+        local botTools = import("./AM-BotTools/botTools")
+        local compTools = import("./AM-CompTools/compTools")
 
         --initialize "class" object
             local nodeTools = { _version = "0.0.0" }

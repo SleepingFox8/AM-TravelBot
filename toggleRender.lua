@@ -12,7 +12,7 @@
             return imported
         end
     -- import dependencies
-        SCRIPT.compTools = import("./AM-Tools/compTools")
+        SCRIPT.compTools = import("./AM-CompTools/compTools")
         SCRIPT.nodeTools = import"nodeTools"
         
     --initialize GLBL table if needed
