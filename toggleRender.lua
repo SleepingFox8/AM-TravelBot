@@ -4,9 +4,16 @@
     --Stores global variables for just this script
         local SCRIPT = {}
 
+    -- ensure imports are from file instead of cache
+        local function import(path)
+            package.loaded[path] = nil
+            local imported = require (path)
+            package.loaded[path] = nil
+            return imported
+        end
     -- import dependencies
-        SCRIPT.compTools = require ("./AM-Tools/compTools")
-        SCRIPT.nodeTools = require "nodeTools"
+        SCRIPT.compTools = import("./AM-Tools/compTools")
+        SCRIPT.nodeTools = import"nodeTools"
         
     --initialize GLBL table if needed
         if GLBL == nil then

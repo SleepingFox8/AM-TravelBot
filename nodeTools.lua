@@ -1,8 +1,15 @@
 --initialization
+    -- ensure imports are from file instead of cache
+        local function import(path)
+            package.loaded[path] = nil
+            local imported = require (path)
+            package.loaded[path] = nil
+            return imported
+        end
     -- import dependencies
-        local json = require ("./json.lua/json")
-        local botTools = require ("./AM-Tools/botTools")
-        local compTools = require ("./AM-Tools/compTools")
+        local json = import("./json.lua/json")
+        local botTools = import("./AM-Tools/botTools")
+        local compTools = import("./AM-Tools/compTools")
 
         --initialize "class" object
             local nodeTools = { _version = "0.0.0" }

@@ -1,8 +1,15 @@
 --initialization
+    -- ensure imports are from file instead of cache
+        local function import(path)
+            package.loaded[path] = nil
+            local imported = require (path)
+            package.loaded[path] = nil
+            return imported
+        end
 -- import dependencies
-        local botTools = require ("./AM-Tools/botTools")
-        local compTools = require ("./AM-Tools/compTools")
-        local nodeTools = require "nodeTools"
+        local botTools = import("../AM-Tools/botTools")
+        local compTools = import("../AM-Tools/compTools")
+        local nodeTools = import("../nodeTools")
     --assertions
         if compTools.givenScriptIsRunning("AM-TravelBot/toggleRender.lua") == false then
             log("&7[&6NodeManagement&7]&f Please render nodes with toggleRender.lua before modifying them")
