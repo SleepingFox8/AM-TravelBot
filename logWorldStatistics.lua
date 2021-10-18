@@ -66,6 +66,20 @@
         return os.date('!%d:%H:%M:%S', seconds)
     end
 
+    function SCRIPT.tableKeyCount(table)
+        --initialize function
+            --initialize function table
+                local FUNC = {}
+            --store arguments in known scoped table
+                FUNC.table = table
+
+        FUNC.count = 0
+        for _ in pairs(FUNC.table) do
+            FUNC.count = FUNC.count + 1
+        end
+        return FUNC.count
+    end
+
 --Main Program
     --initialize MAIN table
     --Stores variables for just MAIN function
@@ -92,6 +106,21 @@
         end
 
         log("Distance of all paths (in meters): ", math.floor(MAIN.totalDistance))
+
+    -- num nodes
+
+        log("Node count: " .. SCRIPT.tableKeyCount(GLBL.nodes))
+
+    -- intersections
+        MAIN.intersectionCount = 0
+        for key,value in pairs(GLBL.nodes) do
+            MAIN.node = key
+            if SCRIPT.tableKeyCount(GLBL.nodes[MAIN.node].connections) > 2 then
+                MAIN.intersectionCount = MAIN.intersectionCount + 1
+            end
+        end
+        
+        log("Intersection count: " .. MAIN.intersectionCount)
 
     -- display number of expandable rails
         MAIN.nearestExpandableRail, MAIN.expandbleRailCount = nodeTools.nearestExpandableRail()
