@@ -31,6 +31,10 @@
         SCRIPT.sprintJumpingIceSpeed = 16.9
 
 -- functions
+
+    function SCRIPT.slog(string)
+        log("&7[&6NodeStats&7]&f ", string)
+    end
     function SCRIPT.pathTypeBetweenNodes(node1, node2)
         --initialize function
             --initialize function table
@@ -105,11 +109,11 @@
             end
         end
 
-        log("Distance of all paths (in meters): ", math.floor(MAIN.totalDistance))
+        SCRIPT.slog("Distance of all paths (in meters): " .. math.floor(MAIN.totalDistance))
 
     -- num nodes
 
-        log("Node count: " .. SCRIPT.tableKeyCount(GLBL.nodes))
+        SCRIPT.slog("Node count: " .. SCRIPT.tableKeyCount(GLBL.nodes))
 
     -- intersections
         MAIN.intersectionCount = 0
@@ -120,11 +124,11 @@
             end
         end
         
-        log("Intersection count: " .. MAIN.intersectionCount)
+        SCRIPT.slog("Intersection count: " .. MAIN.intersectionCount)
 
     -- display number of expandable rails
         MAIN.nearestExpandableRail, MAIN.expandbleRailCount = nodeTools.nearestExpandableRail()
-        log("Expandable rails: ", MAIN.expandbleRailCount)
+        SCRIPT.slog("Expandable rails: " .. MAIN.expandbleRailCount)
 
     -- display minimum time to travel all paths
 
@@ -147,4 +151,4 @@
             end
         end
 
-        log("Minimum time to traverse all paths: " .. SCRIPT.secondsToClock(MAIN.totalTravelTime))
+        SCRIPT.slog("Minimum time to traverse all paths: " .. SCRIPT.secondsToClock(MAIN.totalTravelTime))
