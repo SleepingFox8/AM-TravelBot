@@ -122,9 +122,11 @@
             return FUNC.count
         end
 
-        function SCRIPT.findNearestUnvalidatedPath(start, goal)
+        function SCRIPT.findNearestUnvalidatedPath(start)
             --initialize function table
                 local FUNC = {}
+
+            local goal = nil
                 
             -- The set of discovered GLBL.nodes that may need to be (re-)expanded.
             -- Initially, only the start node is known.
@@ -210,14 +212,37 @@
             return false
         end
 
+        function SCRIPT.ensureFileExists(dir)
+            --function initialization
+                --initialize function table
+                    local FUNC = {}
+                --store arguments in locally scoped table for scope safety
+                    FUNC.dir = dir
+
+            if SCRIPT.nodeTools.file_exists(FUNC.dir) ~= true then
+                --create file
+                    FUNC.file = filesystem.open(FUNC.dir, "w")
+                    FUNC.file:close()
+            end
+        end
+
+        function SCRIPT.replace_char(pos, str, r)
+            return str:sub(1, pos-1) .. r .. str:sub(pos+1)
+        end
+
         function SCRIPT.loadValidatedPathsFromJson()
             --function initialization
                 --initialize function table
                     local FUNC = {}
 
-            FUNC.player = getPlayer()
-            SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
-            return SCRIPT.json.decode(SCRIPT.compTools.readAll(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json"))
+            -- SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+            SCRIPT.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+            FUNC.fileString = SCRIPT.compTools.readAll(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+
+            -- turn string to valid JSON
+            FUNC.fileString = "{".. SCRIPT.replace_char(#FUNC.fileString, FUNC.fileString, "}")
+
+            return SCRIPT.json.decode(FUNC.fileString )
         end
 
 -- toggle this script off if it is already running
@@ -230,7 +255,7 @@
             waitTick()
         SCRIPT.slog("Saving validated paths to file...")
 
-        SCRIPT.saveValidatedPathsToJson(GLBL.validatedPaths)
+        -- SCRIPT.saveValidatedPathsToJson(GLBL.validatedPaths)
 
         SCRIPT.slog("Validated paths saved...")
 
@@ -274,9 +299,12 @@
 
     MAIN.pathTraveled = SCRIPT.travelBot.travelTo(MAIN.startingNode)
 
-    -- leave second argument nil
     MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.startingNode)
 
+    -- time between each client re-reading nodes from file
+    MAIN.fileLoadTime = 1000 * 60 * 5
+
+    SCRIPT.compTools.setTimer("loadFromFile", MAIN.fileLoadTime)
     MAIN.endedAt = nil
     while MAIN.nodeA ~= false do
 
@@ -286,17 +314,27 @@
         SCRIPT.travelBot.travelTo(MAIN.nodeB)
         MAIN.endedAt = MAIN.nodeB
 
-        GLBL.validatedPaths[MAIN.nodeA..MAIN.nodeB] = true
+        -- append validated path to file
+            log(SCRIPT.nodeTools.pathToCurrentStorageDir())
+            MAIN.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "a")
+            MAIN.file:write("\""..MAIN.nodeA..MAIN.nodeB.."\":true,\n")
+            MAIN.file:close()
+        -- add path to internal table
+            GLBL.validatedPaths[MAIN.nodeA..MAIN.nodeB] = true
 
         log("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
 
+        if SCRIPT.compTools.haveTime("loadFromFile") == false then
+            GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
+            SCRIPT.compTools.setTimer("loadFromFile", MAIN.fileLoadTime)
+        end
+
         -- leave at end of while loop
-            -- leave second argument nil
             MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.nodeB)
     end
 
-    SCRIPT.slog("Path validation completed. Saving validated paths")
-    SCRIPT.saveValidatedPathsToJson(GLBL.validatedPaths)
-    SCRIPT.slog("Paths saved")
+    SCRIPT.slog("Path validation completed...")
+    -- SCRIPT.saveValidatedPathsToJson(GLBL.validatedPaths)
+    -- SCRIPT.slog("Paths saved")
 
     
