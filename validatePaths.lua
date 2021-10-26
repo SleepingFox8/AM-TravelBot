@@ -28,6 +28,8 @@
     end
 
     -- global variable declaration
+        -- RNG
+            math.randomseed( os.time() )
         -- define player movement speeds
             SCRIPT.walkingSpeed = 4.317
             SCRIPT.sprintSpeed = 5.612
@@ -245,6 +247,29 @@
             return SCRIPT.json.decode(FUNC.fileString )
         end
 
+
+    function SCRIPT.chartPathBetween(startNode, endNode)
+        --function initialization
+            --initialize function table
+                local FUNC = {}
+            --store arguments in locally scoped table for scope safety
+                FUNC.startNode, FUNC.endNode = startNode, endNode
+
+        SCRIPT.travelBot.travelTo(FUNC.endNode)
+    
+        -- append validated path to file
+            FUNC.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "a")
+            FUNC.file:write("\""..FUNC.startNode..FUNC.endNode.."\":true,\n")
+            FUNC.file:close()
+        -- add path to internal table
+            GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = true
+
+        log("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
+
+        GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
+
+    end
+
 -- toggle this script off if it is already running
     if SCRIPT.compTools.anotherInstanceOfThisScriptIsRunning() then
         SCRIPT.slog("Stopping validation...")
@@ -299,39 +324,96 @@
 
     MAIN.pathTraveled = SCRIPT.travelBot.travelTo(MAIN.startingNode)
 
+
     MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.startingNode)
 
-    -- time between each client re-reading nodes from file
-    MAIN.fileLoadTime = 1000 * 60 * 5
 
-    SCRIPT.compTools.setTimer("loadFromFile", MAIN.fileLoadTime)
-    MAIN.endedAt = nil
     while MAIN.nodeA ~= false do
 
-        if MAIN.endedAt ~= MAIN.nodeA then
-            SCRIPT.travelBot.travelTo(MAIN.nodeA)
-        end
-        SCRIPT.travelBot.travelTo(MAIN.nodeB)
-        MAIN.endedAt = MAIN.nodeB
+        SCRIPT.travelBot.travelTo(MAIN.nodeA)
+        
+        -- find uncharted paths connected to player's current node
+            MAIN.unchartedPathNodes = {}
+            for key,value in pairs(GLBL.nodes[MAIN.nodeA].connections) do
+                MAIN.nodeInQuestion = key
 
-        -- append validated path to file
-            log(SCRIPT.nodeTools.pathToCurrentStorageDir())
-            MAIN.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "a")
-            MAIN.file:write("\""..MAIN.nodeA..MAIN.nodeB.."\":true,\n")
-            MAIN.file:close()
-        -- add path to internal table
-            GLBL.validatedPaths[MAIN.nodeA..MAIN.nodeB] = true
+                if GLBL.validatedPaths[MAIN.nodeA..MAIN.nodeInQuestion] == nil and GLBL.validatedPaths[MAIN.nodeInQuestion..MAIN.nodeA] == nil then
 
-        log("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
+                    -- append MAIN.nodeInQuestion to MAIN.unchartedPathNodes[]
+                    MAIN.unchartedPathNodes[#MAIN.unchartedPathNodes + 1] = MAIN.nodeInQuestion
+                end
+            end
 
-        if SCRIPT.compTools.haveTime("loadFromFile") == false then
-            GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
-            SCRIPT.compTools.setTimer("loadFromFile", MAIN.fileLoadTime)
+            log("(new)")
+            log(MAIN.unchartedPathNodes)
+
+        while #MAIN.unchartedPathNodes > 0 do
+        
+            if #MAIN.unchartedPathNodes == 1 then
+                SCRIPT.chartPathBetween(MAIN.nodeA, MAIN.unchartedPathNodes[1])
+                MAIN.nodeA = MAIN.unchartedPathNodes[1]
+            else
+                MAIN.targetNode = MAIN.unchartedPathNodes[math.random(#MAIN.unchartedPathNodes)]
+                SCRIPT.chartPathBetween(MAIN.nodeA, MAIN.targetNode)
+                MAIN.nodeA = MAIN.targetNode
+            end
+
+
+            
+
+            -- find uncharted paths connected to player's current node
+                MAIN.unchartedPathNodes = {}
+                for key,value in pairs(GLBL.nodes[MAIN.nodeA].connections) do
+                    MAIN.nodeInQuestion = key
+    
+                    if GLBL.validatedPaths[MAIN.nodeA..MAIN.nodeInQuestion] == nil and GLBL.validatedPaths[MAIN.nodeInQuestion..MAIN.nodeA] == nil then
+    
+                        -- append MAIN.nodeInQuestion to MAIN.unchartedPathNodes[]
+                        MAIN.unchartedPathNodes[#MAIN.unchartedPathNodes + 1] = MAIN.nodeInQuestion
+                    end
+                end
+
+            log("(continued)")
         end
 
         -- leave at end of while loop
             MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.nodeB)
     end
+
+    -- MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.startingNode)
+
+    -- -- time between each client re-reading nodes from file
+    -- MAIN.fileLoadTime = 1000 * 60 * 5
+
+    -- SCRIPT.compTools.setTimer("loadFromFile", MAIN.fileLoadTime)
+    -- MAIN.endedAt = nil
+    -- while MAIN.nodeA ~= false do
+
+    --     if MAIN.endedAt ~= MAIN.nodeA then
+    --         SCRIPT.travelBot.travelTo(MAIN.nodeA)
+    --     end
+    --     SCRIPT.travelBot.travelTo(MAIN.nodeB)
+    --     MAIN.endedAt = MAIN.nodeB
+
+    --     -- append validated path to file
+    --         log(SCRIPT.nodeTools.pathToCurrentStorageDir())
+    --         MAIN.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "a")
+    --         MAIN.file:write("\""..MAIN.nodeA..MAIN.nodeB.."\":true,\n")
+    --         MAIN.file:close()
+    --     -- add path to internal table
+    --         GLBL.validatedPaths[MAIN.nodeA..MAIN.nodeB] = true
+
+    --     log("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
+
+    --     -- if SCRIPT.compTools.haveTime("loadFromFile") == false then
+    --     if true then
+    --         GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
+    --         SCRIPT.compTools.setTimer("loadFromFile", MAIN.fileLoadTime)
+    --     end
+
+    --     -- leave at end of while loop
+    --         MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.nodeB)
+    -- end
 
     SCRIPT.slog("Path validation completed...")
     -- SCRIPT.saveValidatedPathsToJson(GLBL.validatedPaths)
