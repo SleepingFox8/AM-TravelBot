@@ -128,6 +128,10 @@
 
     -- display number of expandable rails
         MAIN.nearestExpandableRail, MAIN.expandbleRailCount = nodeTools.nearestExpandableRail()
+        -- handle nil
+            if MAIN.expandbleRailCount == nil then
+                MAIN.expandbleRailCount = 0
+            end
         SCRIPT.slog("Expandable rails: " .. MAIN.expandbleRailCount)
 
     -- display minimum time to travel all paths
