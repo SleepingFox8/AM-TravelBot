@@ -256,18 +256,26 @@
                 FUNC.startNode, FUNC.endNode = startNode, endNode
 
         SCRIPT.travelBot.travelTo(FUNC.endNode)
+
+        FUNC.curTime = os.time()
     
         -- append validated path to file
             FUNC.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "a")
-            FUNC.file:write("\""..FUNC.startNode..FUNC.endNode.."\":true,\n")
+            -- FUNC.file:write("\""..FUNC.startNode..FUNC.endNode.."\":",FUNC.curTime..",\n")
+
+
+            -- form data table
+
+                FUNC.unixTime = string.format("%.0f",FUNC.curTime)
+                FUNC.tableString = "{ \"unixTime\": "..FUNC.unixTime..", \"player\": \""..getPlayer().name .."\" }"
+            FUNC.file:write("\""..FUNC.startNode..FUNC.endNode.."\":".. FUNC.tableString ..",\n")
             FUNC.file:close()
         -- add path to internal table
-            GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = true
+            GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = FUNC.tableString
 
         log("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
 
         GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
-
     end
 
 -- toggle this script off if it is already running
@@ -300,27 +308,27 @@
     
 
     -- find node to start from
-    MAIN.startingNode = SCRIPT.nodeTools.nodeCloseby()
+        MAIN.startingNode = SCRIPT.nodeTools.nodeCloseby()
 
-    if MAIN.startingNode == false then
-        MAIN.pathFail,_,_, _, MAIN.nodeA, MAIN.nodeB = SCRIPT.nodeTools.pathCloseby()
+        if MAIN.startingNode == false then
+            MAIN.pathFail,_,_, _, MAIN.nodeA, MAIN.nodeB = SCRIPT.nodeTools.pathCloseby()
 
-        if MAIN.pathFail == false then
-            SCRIPT.slog("No paths nearby. Cannot run script...")
-            return 0
+            if MAIN.pathFail == false then
+                SCRIPT.slog("No paths nearby. Cannot run script...")
+                return 0
+            end
+
+            MAIN.pX, MAIN.pY, MAIN.pZ = getPlayerPos()
+
+            MAIN.distanceToNodeA = SCRIPT.compTools.distanceBetweenPoints(MAIN.pX, MAIN.pY, MAIN.pZ, GLBL.nodes[MAIN.nodeA].x,GLBL.nodes[MAIN.nodeA].y,GLBL.nodes[MAIN.nodeA].z)
+            MAIN.distanceToNodeB = SCRIPT.compTools.distanceBetweenPoints(MAIN.pX, MAIN.pY, MAIN.pZ, GLBL.nodes[MAIN.nodeB].x,GLBL.nodes[MAIN.nodeB].y,GLBL.nodes[MAIN.nodeB].z)
+
+            if MAIN.distanceToNodeA < MAIN.distanceToNodeB then
+                MAIN.startingNode = MAIN.nodeA
+            else
+                MAIN.startingNode = MAIN.nodeB
+            end
         end
-
-        MAIN.pX, MAIN.pY, MAIN.pZ = getPlayerPos()
-
-        MAIN.distanceToNodeA = SCRIPT.compTools.distanceBetweenPoints(MAIN.pX, MAIN.pY, MAIN.pZ, GLBL.nodes[MAIN.nodeA].x,GLBL.nodes[MAIN.nodeA].y,GLBL.nodes[MAIN.nodeA].z)
-        MAIN.distanceToNodeB = SCRIPT.compTools.distanceBetweenPoints(MAIN.pX, MAIN.pY, MAIN.pZ, GLBL.nodes[MAIN.nodeB].x,GLBL.nodes[MAIN.nodeB].y,GLBL.nodes[MAIN.nodeB].z)
-
-        if MAIN.distanceToNodeA < MAIN.distanceToNodeB then
-            MAIN.startingNode = MAIN.nodeA
-        else
-            MAIN.startingNode = MAIN.nodeB
-        end
-    end
 
     MAIN.pathTraveled = SCRIPT.travelBot.travelTo(MAIN.startingNode)
 
@@ -330,6 +338,7 @@
 
     while MAIN.nodeA ~= false do
 
+        SCRIPT.slog("&bTraveling to new path")
         SCRIPT.travelBot.travelTo(MAIN.nodeA)
         
         -- find uncharted paths connected to player's current node
@@ -344,11 +353,9 @@
                 end
             end
 
-            log("(new)")
-            log(MAIN.unchartedPathNodes)
-
         while #MAIN.unchartedPathNodes > 0 do
         
+            SCRIPT.slog("&bValidating path")
             if #MAIN.unchartedPathNodes == 1 then
                 SCRIPT.chartPathBetween(MAIN.nodeA, MAIN.unchartedPathNodes[1])
                 MAIN.nodeA = MAIN.unchartedPathNodes[1]
@@ -357,9 +364,6 @@
                 SCRIPT.chartPathBetween(MAIN.nodeA, MAIN.targetNode)
                 MAIN.nodeA = MAIN.targetNode
             end
-
-
-            
 
             -- find uncharted paths connected to player's current node
                 MAIN.unchartedPathNodes = {}
@@ -372,12 +376,10 @@
                         MAIN.unchartedPathNodes[#MAIN.unchartedPathNodes + 1] = MAIN.nodeInQuestion
                     end
                 end
-
-            log("(continued)")
         end
 
         -- leave at end of while loop
-            MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.nodeB)
+            MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.nodeA)
     end
 
     -- MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.startingNode)
