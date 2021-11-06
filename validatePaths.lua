@@ -255,17 +255,26 @@
             --store arguments in locally scoped table for scope safety
                 FUNC.startNode, FUNC.endNode = startNode, endNode
 
-        SCRIPT.travelBot.travelTo(FUNC.endNode)
 
-        FUNC.curTime = os.time()
+        FUNC.pathType = SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.startNode].pathType, GLBL.nodes[FUNC.endNode].pathType)
+
+        --walk to point according to pathType
+            --iceroad
+                if FUNC.pathType == "iceroad" then
+                    SCRIPT.botTools.sprintJumpToPoint(GLBL.nodes[FUNC.endNode].x, GLBL.nodes[FUNC.endNode].y, GLBL.nodes[FUNC.endNode].z)
+            --"roofless iceroad"
+                elseif FUNC.pathType == "roofless iceroad" then
+                    SCRIPT.botTools.sprintJumpToPoint(GLBL.nodes[FUNC.endNode].x, GLBL.nodes[FUNC.endNode].y, GLBL.nodes[FUNC.endNode].z)
+            --normal
+                else
+                    SCRIPT.botTools.sprintToPoint(GLBL.nodes[FUNC.endNode].x, GLBL.nodes[FUNC.endNode].y, GLBL.nodes[FUNC.endNode].z)
+                end
     
         -- append validated path to file
             FUNC.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "a")
-            -- FUNC.file:write("\""..FUNC.startNode..FUNC.endNode.."\":",FUNC.curTime..",\n")
-
 
             -- form data table
-
+                FUNC.curTime = os.time()
                 FUNC.unixTime = string.format("%.0f",FUNC.curTime)
                 FUNC.tableString = "{ \"unixTime\": "..FUNC.unixTime..", \"player\": \""..getPlayer().name .."\" }"
             FUNC.file:write("\""..FUNC.startNode..FUNC.endNode.."\":".. FUNC.tableString ..",\n")
@@ -286,11 +295,6 @@
         -- uncrouch
             sneak(1)
             waitTick()
-        SCRIPT.slog("Saving validated paths to file...")
-
-        -- SCRIPT.saveValidatedPathsToJson(GLBL.validatedPaths)
-
-        SCRIPT.slog("Validated paths saved...")
 
         -- silently end this script
             return 0
@@ -329,8 +333,6 @@
                 MAIN.startingNode = MAIN.nodeB
             end
         end
-
-    MAIN.pathTraveled = SCRIPT.travelBot.travelTo(MAIN.startingNode)
 
 
     MAIN.nodeA, MAIN.nodeB = SCRIPT.findNearestUnvalidatedPath(MAIN.startingNode)
