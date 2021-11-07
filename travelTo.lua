@@ -223,33 +223,16 @@
                                 SCRIPT.nodeIdToDestName[MAIN.targetNode] = "[Expansion] > Nearest expandable rail"
                                 -- travel to destination
 
-
-                                    -- determine if path to target
-                                        SCRIPT.slog("Finding path to destination")
-                                        MAIN.pathToTarget, MAIN.etaInSeconds = travelBot.findPathToNode(MAIN.targetNode)
-                                        if MAIN.pathToTarget == false then
-                                            SCRIPT.slog("No known path to target destination")
-                                            return 0
-                                        end
-
                                     -- list the coords
-                                        log("X: " .. GLBL.nodes[MAIN.targetNode].x)
-                                        log("Y: " .. GLBL.nodes[MAIN.targetNode].y)
-                                        log("Z: " .. GLBL.nodes[MAIN.targetNode].z)
-                                        log("Distance: " .. compTools.playerDistanceFrom(GLBL.nodes[MAIN.targetNode].x, GLBL.nodes[MAIN.targetNode].y, GLBL.nodes[MAIN.targetNode].z))
+                                        SCRIPT.slog("X: " .. GLBL.nodes[MAIN.targetNode].x)
+                                        SCRIPT.slog("Y: " .. GLBL.nodes[MAIN.targetNode].y)
+                                        SCRIPT.slog("Z: " .. GLBL.nodes[MAIN.targetNode].z)
+                                        SCRIPT.slog("Distance: " .. compTools.playerDistanceFrom(GLBL.nodes[MAIN.targetNode].x, GLBL.nodes[MAIN.targetNode].y, GLBL.nodes[MAIN.targetNode].z))
 
-                                        SCRIPT.logTripDetails(MAIN.etaInSeconds, MAIN.targetNode)
-
-                                    -- travel to destination
-                                        -- start timer
-                                        MAIN.start_time = os.time()
-                                        -- travel to destination
-                                            travelBot.travelTypePath(MAIN.pathToTarget)
-                                        -- calculate time it took to complete travel
-                                            MAIN.timeDiff = os.difftime(os.time(),MAIN.start_time)
-                                        SCRIPT.slog("You have arrived at \"" .. MAIN.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
-
-                                    SCRIPT.arrivalRoutine()
+                                    if SCRIPT.attemptTravelTo(MAIN.targetNode) == false then
+                                        SCRIPT.slog("No known path to target destination")
+                                        return 0
+                                    end
                             else
                                 log("&7[&6TravelBot&7]§f There are currently no known expandable rails")
                             end
