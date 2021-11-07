@@ -25,12 +25,12 @@
 --function declarations
 
     -- A* pathfinding related
-        function h(node, goal)
+        function SCRIPT.h(node, goal)
             --initialize function table
                 local FUNC = {}
 
             FUNC.cost = nil
-            FUNC.distance = distanceBetweenNodes(node, goal)
+            FUNC.distance = SCRIPT.distanceBetweenNodes(node, goal)
 
             -- assume there could be an iceroad ahead
                 FUNC.cost = FUNC.distance / SCRIPT.sprintJumpingIceSpeed
@@ -38,12 +38,12 @@
             return FUNC.cost
         end
 
-        function d(node1, node2)
+        function SCRIPT.d(node1, node2)
             --initialize function table
                 local FUNC = {}
 
             FUNC.cost = nil
-            FUNC.distance = distanceBetweenNodes(node1, node2)
+            FUNC.distance = SCRIPT.distanceBetweenNodes(node1, node2)
             -- determine type of connection
                 -- iceroad
                     if nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[node1].pathType, GLBL.nodes[node2].pathType) == "iceroad" then
@@ -60,11 +60,11 @@
         end
 
         -- find the distance between two GLBL.nodes
-        function distanceBetweenNodes(node, goal)
+        function SCRIPT.distanceBetweenNodes(node, goal)
             return compTools.distanceBetweenPoints(GLBL.nodes[goal].x, GLBL.nodes[goal].y, GLBL.nodes[goal].z, GLBL.nodes[node].x, GLBL.nodes[node].y, GLBL.nodes[node].z)
         end
 
-        function reconstruct_path(cameFrom, current)
+        function SCRIPT.reconstruct_path(cameFrom, current)
             --initialize function table
                 local FUNC = {}
 
@@ -85,7 +85,7 @@
             return FUNC.total_path
         end
 
-        function A_Star(start, goal)
+        function SCRIPT.A_Star(start, goal)
             --initialize function table
                 local FUNC = {}
                 
@@ -107,14 +107,14 @@
                 end
             FUNC.gScore[start] = 0
 
-            -- For node n, FUNC.fScore[n] := FUNC.gScore[n] + h(n). FUNC.fScore[n] represents our current best guess as to
+            -- For node n, FUNC.fScore[n] := FUNC.gScore[n] + SCRIPT.h(n). FUNC.fScore[n] represents our current best guess as to
             -- how short a path from start to finish can be if it goes through n.
             FUNC.fScore = {}
                 -- map with default value of Infinity
                 for key,value in pairs(GLBL.nodes) do
                     FUNC.fScore[key] = 1/0
                 end
-            FUNC.fScore[start] = h(start, goal)
+            FUNC.fScore[start] = SCRIPT.h(start, goal)
 
             -- while FUNC.openSet is not empty
             while(compTools.tableIsEmpty(FUNC.openSet) ~= true)do
@@ -130,7 +130,7 @@
                     end
                     FUNC.current = FUNC.nameOfLowest
                 if FUNC.current == goal then
-                    return reconstruct_path(FUNC.cameFrom, FUNC.current)
+                    return SCRIPT.reconstruct_path(FUNC.cameFrom, FUNC.current)
                 end
 
                 -- FUNC.openSet.Remove(FUNC.current)
@@ -138,14 +138,14 @@
                 -- for each FUNC.neighbor of FUNC.current
                 for key,value in pairs(GLBL.nodes[FUNC.current].connections) do 
                     FUNC.neighbor = key
-                    -- d(FUNC.current, FUNC.neighbor) is the weight of the edge from FUNC.current to FUNC.neighbor
+                    -- SCRIPT.d(FUNC.current, FUNC.neighbor) is the weight of the edge from FUNC.current to FUNC.neighbor
                     -- FUNC.tentative_gScore is the distance from start to the FUNC.neighbor through FUNC.current
-                    FUNC.tentative_gScore = FUNC.gScore[FUNC.current] + d(FUNC.current, FUNC.neighbor)
+                    FUNC.tentative_gScore = FUNC.gScore[FUNC.current] + SCRIPT.d(FUNC.current, FUNC.neighbor)
                     if FUNC.tentative_gScore < FUNC.gScore[FUNC.neighbor] then
                         -- This path to FUNC.neighbor is better than any previous one. Record it!
                         FUNC.cameFrom[FUNC.neighbor] = FUNC.current
                         FUNC.gScore[FUNC.neighbor] = FUNC.tentative_gScore
-                        FUNC.fScore[FUNC.neighbor] = FUNC.gScore[FUNC.neighbor] + h(FUNC.neighbor, goal)
+                        FUNC.fScore[FUNC.neighbor] = FUNC.gScore[FUNC.neighbor] + SCRIPT.h(FUNC.neighbor, goal)
                         -- if FUNC.neighbor not in FUNC.openSet
                         if FUNC.openSet[FUNC.neighbor] == nil then
                             -- FUNC.openSet.add(neighbor)
@@ -159,7 +159,7 @@
             return false
         end
 
-        function namePathToPointPath(namePath)
+        function SCRIPT.namePathToPointPath(namePath)
             --initialize function table
                 local FUNC = {}
 
@@ -177,7 +177,7 @@
         end
     
     -- Walk-Path related
-        function travelTypePath(typePath)
+        function SCRIPT.travelTypePath(typePath)
             --initialize function
                 --initialize function table
                     local FUNC = {}
@@ -219,7 +219,7 @@
         end
 
     -- time related
-        function getPathEta(nodeNamePath)
+        function SCRIPT.getPathEta(nodeNamePath)
             --initialize function table
                 local FUNC = {}
 
@@ -230,7 +230,7 @@
                     FUNC.lastNode = value
                 else
                     FUNC.currentNode = value
-                    FUNC.distance = distanceBetweenNodes(FUNC.currentNode, FUNC.lastNode)
+                    FUNC.distance = SCRIPT.distanceBetweenNodes(FUNC.currentNode, FUNC.lastNode)
 
                     -- iceroad path
                         if GLBL.nodes[FUNC.currentNode].pathType == "iceroad" and GLBL.nodes[FUNC.lastNode].pathType == "iceroad" then
@@ -250,11 +250,11 @@
             return FUNC.totalTravelTime
         end
 
-        function SecondsToClock(seconds)
+        function SCRIPT.SecondsToClock(seconds)
             return os.date('!%H:%M:%S', seconds)
         end
 
-    function coordinatesToString(x,y,z)
+    function SCRIPT.coordinatesToString(x,y,z)
         --initialize function table
             local FUNC = {}
 
@@ -264,17 +264,17 @@
         return "[x:" .. FUNC.x .. ", y:" .. FUNC.y .. ", z:" .. FUNC.z .. "]"
     end
 
-    function nodeCoordinatesString(nodeName)
+    function SCRIPT.nodeCoordinatesString(nodeName)
         --initialize function table
             local FUNC = {}
 
         FUNC.x = GLBL.nodes[nodeName].x
         FUNC.y = GLBL.nodes[nodeName].y
         FUNC.z = GLBL.nodes[nodeName].z
-        return coordinatesToString(FUNC.x,FUNC.y,FUNC.z)
+        return SCRIPT.coordinatesToString(FUNC.x,FUNC.y,FUNC.z)
     end
 
-    function getNamedDestinations()
+    function SCRIPT.getNamedDestinations()
         --initialize function table
             local FUNC = {}
         
@@ -292,7 +292,7 @@
         return FUNC.namedDestinations
     end
 
-    function nodeIdPathToTypePath(nodeIdPath)
+    function SCRIPT.nodeIdPathToTypePath(nodeIdPath)
         --initialize function table
             local FUNC = {}
 
@@ -331,7 +331,7 @@
                 FUNC.startPoint = "pathEntryPoint"
             end
         -- (start, goal)
-        FUNC.namePath = A_Star(FUNC.startPoint, FUNC.targetNodeId)
+        FUNC.namePath = SCRIPT.A_Star(FUNC.startPoint, FUNC.targetNodeId)
 
         if FUNC.namePath == false then
             log("&7[&6TravelBot&7]§f No known path to target location...")
@@ -340,22 +340,22 @@
             return false
         else
             -- calculate ETA
-                FUNC.etaInSeconds = getPathEta(FUNC.namePath)
-                FUNC.clockETA = SecondsToClock(FUNC.etaInSeconds)
+                FUNC.etaInSeconds = SCRIPT.getPathEta(FUNC.namePath)
+                FUNC.clockETA = SCRIPT.SecondsToClock(FUNC.etaInSeconds)
                 if SCRIPT.nodeIdToDestName[FUNC.targetNodeId] ~= nil then
-                    log("&7[&6TravelBot&7]§f Traveling to \"" .. SCRIPT.nodeIdToDestName[FUNC.targetNodeId] .. "\" at " .. nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
+                    log("&7[&6TravelBot&7]§f Traveling to \"" .. SCRIPT.nodeIdToDestName[FUNC.targetNodeId] .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
                 else
-                    log("&7[&6TravelBot&7]§f Traveling to \"" .. FUNC.targetNodeId .. "\" at " .. nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
+                    log("&7[&6TravelBot&7]§f Traveling to \"" .. FUNC.targetNodeId .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
                 end
             
-            FUNC.typePath = nodeIdPathToTypePath(FUNC.namePath)
+            FUNC.typePath = SCRIPT.nodeIdPathToTypePath(FUNC.namePath)
             -- remove GLBL.nodes["pathEntryPoint"] now that we are done with FUNC.namePath
                 GLBL.nodes["pathEntryPoint"] = nil
 
             -- start travel time timer
                 FUNC.start_time = os.time()
             -- travel to destination
-                travelTypePath(FUNC.typePath)
+                SCRIPT.travelTypePath(FUNC.typePath)
             -- stop travel time timer and calculate time it took to complete travel
                 FUNC.timeDiff = os.difftime(os.time(),FUNC.start_time)
 
@@ -366,7 +366,7 @@
                     FUNC.stringDestName = FUNC.targetNodeId
                 end
 
-            log("&7[&6TravelBot&7]§f You have arrived at \"" .. FUNC.stringDestName .. "\" after " .. SecondsToClock(FUNC.timeDiff))
+            log("&7[&6TravelBot&7]§f You have arrived at \"" .. FUNC.stringDestName .. "\" after " .. SCRIPT.SecondsToClock(FUNC.timeDiff))
             botTools.freezeAllMotorFunctions()
             return true
         end
