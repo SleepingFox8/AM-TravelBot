@@ -177,7 +177,7 @@
         end
     
     -- Walk-Path related
-        function SCRIPT.travelTypePath(typePath)
+        function travelBot.travelTypePath(typePath)
             --initialize function
                 --initialize function table
                     local FUNC = {}
@@ -306,17 +306,18 @@
         return FUNC.typePath
     end
 
-    function travelBot.travelTo(targetNodeId)
+    function travelBot.findPathToNode(targetNodeId)
         --initialize function table
             local FUNC = {}
         -- store function args in scope-safe table
             FUNC.targetNodeId = targetNodeId
-        --determing if starting on node or path and resolve starting node name
+
+        --determin if starting on node or path and resolve starting node name
             if nodeTools.nodeCloseby() then
-                log("&7[&6TravelBot&7]§f Starting route on node...")
+                -- log("&7[&6TravelBot&7]§f Starting route on node...")
                 FUNC.startPoint = nodeTools.nodeCloseby()
             else
-                log("&7[&6TravelBot&7]§f Starting route at path point...")
+                -- log("&7[&6TravelBot&7]§f Starting route at path point...")
                 FUNC.startX,FUNC.startY,FUNC.startZ,FUNC.startDistance, FUNC.nodeA, FUNC.nodeB, FUNC.currentPathType = nodeTools.pathCloseby()
                 GLBL.nodes["pathEntryPoint"] = {
                     ["x"] = FUNC.startX,
@@ -333,43 +334,59 @@
         -- (start, goal)
         FUNC.namePath = SCRIPT.A_Star(FUNC.startPoint, FUNC.targetNodeId)
 
+        -- if no path found
         if FUNC.namePath == false then
-            log("&7[&6TravelBot&7]§f No known path to target location...")
             -- remove pathEntryPoint
                 GLBL.nodes["pathEntryPoint"] = nil
             return false
         else
             -- calculate ETA
                 FUNC.etaInSeconds = SCRIPT.getPathEta(FUNC.namePath)
-                FUNC.clockETA = SCRIPT.SecondsToClock(FUNC.etaInSeconds)
-                if SCRIPT.nodeIdToDestName[FUNC.targetNodeId] ~= nil then
-                    log("&7[&6TravelBot&7]§f Traveling to \"" .. SCRIPT.nodeIdToDestName[FUNC.targetNodeId] .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
-                else
-                    log("&7[&6TravelBot&7]§f Traveling to \"" .. FUNC.targetNodeId .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
-                end
+                -- FUNC.clockETA = SCRIPT.SecondsToClock(FUNC.etaInSeconds)
+                -- if SCRIPT.nodeIdToDestName[FUNC.targetNodeId] ~= nil then
+                --     log("&7[&6TravelBot&7]§f Traveling to \"" .. SCRIPT.nodeIdToDestName[FUNC.targetNodeId] .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
+                -- else
+                --     log("&7[&6TravelBot&7]§f Traveling to \"" .. FUNC.targetNodeId .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.targetNodeId) .. " ETA: " .. FUNC.clockETA)
+                -- end
             
             FUNC.typePath = SCRIPT.nodeIdPathToTypePath(FUNC.namePath)
             -- remove GLBL.nodes["pathEntryPoint"] now that we are done with FUNC.namePath
                 GLBL.nodes["pathEntryPoint"] = nil
 
-            -- start travel time timer
-                FUNC.start_time = os.time()
-            -- travel to destination
-                SCRIPT.travelTypePath(FUNC.typePath)
-            -- stop travel time timer and calculate time it took to complete travel
-                FUNC.timeDiff = os.difftime(os.time(),FUNC.start_time)
-
-            -- determine name of destination to display to user
-                if SCRIPT.nodeIdToDestName[FUNC.targetNodeId] ~= nil then
-                    FUNC.stringDestName = SCRIPT.nodeIdToDestName[FUNC.targetNodeId]
-                else
-                    FUNC.stringDestName = FUNC.targetNodeId
-                end
-
-            log("&7[&6TravelBot&7]§f You have arrived at \"" .. FUNC.stringDestName .. "\" after " .. SCRIPT.SecondsToClock(FUNC.timeDiff))
-            botTools.freezeAllMotorFunctions()
-            return true
+            return FUNC.typePath, FUNC.etaInSeconds
         end
+    end
+
+    function travelBot.travelTo(targetNodeId)
+        --initialize function table
+            local FUNC = {}
+        -- store function args in scope-safe table
+            FUNC.targetNodeId = targetNodeId
+
+        FUNC.typePath = travelBot.findPathToNode(FUNC.targetNodeId)
+
+        -- if no path found
+        if FUNC.typePath == false then
+            return false
+        end
+
+        -- start travel time timer
+            FUNC.start_time = os.time()
+        -- travel to destination
+            travelBot.travelTypePath(FUNC.typePath)
+        -- stop travel time timer and calculate time it took to complete travel
+            FUNC.timeDiff = os.difftime(os.time(),FUNC.start_time)
+
+        -- determine name of destination to display to user
+            if SCRIPT.nodeIdToDestName[FUNC.targetNodeId] ~= nil then
+                FUNC.stringDestName = SCRIPT.nodeIdToDestName[FUNC.targetNodeId]
+            else
+                FUNC.stringDestName = FUNC.targetNodeId
+            end
+
+        -- log("&7[&6TravelBot&7]§f You have arrived at \"" .. FUNC.stringDestName .. "\" after " .. SCRIPT.SecondsToClock(FUNC.timeDiff))
+        botTools.freezeAllMotorFunctions()
+        return true
     end
 
 -- declaration script wide variables
