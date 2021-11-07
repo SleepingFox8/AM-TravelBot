@@ -84,7 +84,42 @@
                 -- format eta
                     FUNC.etaString = SCRIPT.SecondsToClock(FUNC.etaInSeconds)
                 -- log details
-                    SCRIPT.slog(" Traveling to \"" .. FUNC.targetName .. "\" at " .. SCRIPT.nodeCoordinatesString(SCRIPT.targetNode) .. " ETA: " .. FUNC.etaString)
+                    SCRIPT.slog(" Traveling to \"" .. FUNC.targetName .. "\" at " .. SCRIPT.nodeCoordinatesString(FUNC.node) .. " ETA: " .. FUNC.etaString)
+        end
+
+        function SCRIPT.attemptTravelTo(targetNode)
+            --initialize function table
+                local FUNC = {}
+            -- store function args in scope-safe table
+                FUNC.targetNode = targetNode
+
+            -- determine if path to target
+                SCRIPT.slog("Finding path to destination")
+                FUNC.pathToTarget, FUNC.etaInSeconds = travelBot.findPathToNode(FUNC.targetNode)
+                if FUNC.pathToTarget == false then
+                    return false
+                end
+
+            -- find node name
+                if SCRIPT.nodeIdToDestName[FUNC.targetNode] ~= nil then
+                    FUNC.targetName = SCRIPT.nodeIdToDestName[FUNC.targetNode]
+                else
+                    FUNC.targetName = FUNC.targetNode
+                end
+
+            SCRIPT.logTripDetails(FUNC.etaInSeconds, FUNC.targetNode)
+
+            -- travel to destination
+                -- start timer
+                FUNC.start_time = os.time()
+                -- travel to destination
+                    travelBot.travelTypePath(FUNC.pathToTarget)
+                -- calculate time it took to complete travel
+                    FUNC.timeDiff = os.difftime(os.time(),FUNC.start_time)
+                    log(FUNC.targetName)
+                SCRIPT.slog("You have arrived at \"" .. FUNC.targetName .. "\" after " .. SCRIPT.SecondsToClock(FUNC.timeDiff))
+
+            SCRIPT.arrivalRoutine()
         end
 
 -- declaration script wide variables
@@ -167,98 +202,73 @@
 
         if MAIN.resume == true then
 
-            SCRIPT.targetNode = GLBL.travelTo_lastTarget
+            MAIN.targetNode = GLBL.travelTo_lastTarget
 
-            -- find node name
-                if SCRIPT.nodeIdToDestName[SCRIPT.targetNode] ~= nil then
-                    SCRIPT.targetName = SCRIPT.nodeIdToDestName[SCRIPT.targetNode]
-                else
-                    SCRIPT.targetName = SCRIPT.targetNode
-                end
-
-            -- determine if path to target
-                SCRIPT.slog("Finding path to destination")
-                MAIN.pathToTarget, MAIN.etaInSeconds = travelBot.findPathToNode(SCRIPT.targetNode)
-                if MAIN.pathToTarget == false then
-                    SCRIPT.slog("No known path to target destination")
-                    return 0
-                end
-
-            SCRIPT.logTripDetails(MAIN.etaInSeconds, SCRIPT.targetNode)
-
-            -- travel to destination
-                -- start timer
-                MAIN.start_time = os.time()
-                -- travel to destination
-                    travelBot.travelTypePath(MAIN.pathToTarget)
-                -- calculate time it took to complete travel
-                    MAIN.timeDiff = os.difftime(os.time(),MAIN.start_time)
-                SCRIPT.slog("You have arrived at \"" .. SCRIPT.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
-
-            SCRIPT.arrivalRoutine()
+            if SCRIPT.attemptTravelTo(MAIN.targetNode) == false then
+                SCRIPT.slog("No known path to target destination")
+                return 0
+            end
         else
 
             -- prompt player to pick destination
                 SCRIPT.namedDestinations = compTools.sortTableByKeys(SCRIPT.destNameToNodeId)
-                SCRIPT.targetName = prompt("Enter destination to travel to: ", "choice", table.unpack(SCRIPT.namedDestinations))
+                MAIN.targetName = prompt("Enter destination to travel to: ", "choice", table.unpack(SCRIPT.namedDestinations))
 
-            if SCRIPT.targetName ~= nil then
+            if MAIN.targetName ~= nil then
                 -- catch any special destinations
                     -- [Expansion] > Nearest expandable rail
-                        if SCRIPT.targetName == "[Expansion] > Nearest expandable rail" then
-                            SCRIPT.targetNode = nodeTools.nearestExpandableRail()
-                            if SCRIPT.targetNode ~= false then
-                                SCRIPT.nodeIdToDestName[SCRIPT.targetNode] = "[Expansion] > Nearest expandable rail"
+                        if MAIN.targetName == "[Expansion] > Nearest expandable rail" then
+                            MAIN.targetNode = nodeTools.nearestExpandableRail()
+                            if MAIN.targetNode ~= false then
+                                SCRIPT.nodeIdToDestName[MAIN.targetNode] = "[Expansion] > Nearest expandable rail"
                                 -- travel to destination
 
 
+                                    -- determine if path to target
+                                        SCRIPT.slog("Finding path to destination")
+                                        MAIN.pathToTarget, MAIN.etaInSeconds = travelBot.findPathToNode(MAIN.targetNode)
+                                        if MAIN.pathToTarget == false then
+                                            SCRIPT.slog("No known path to target destination")
+                                            return 0
+                                        end
+
                                     -- list the coords
-                                        log("X: " .. GLBL.nodes[SCRIPT.targetNode].x)
-                                        log("Y: " .. GLBL.nodes[SCRIPT.targetNode].y)
-                                        log("Z: " .. GLBL.nodes[SCRIPT.targetNode].z)
-                                        log("Distance: " .. compTools.playerDistanceFrom(GLBL.nodes[SCRIPT.targetNode].x, GLBL.nodes[SCRIPT.targetNode].y, GLBL.nodes[SCRIPT.targetNode].z))
+                                        log("X: " .. GLBL.nodes[MAIN.targetNode].x)
+                                        log("Y: " .. GLBL.nodes[MAIN.targetNode].y)
+                                        log("Z: " .. GLBL.nodes[MAIN.targetNode].z)
+                                        log("Distance: " .. compTools.playerDistanceFrom(GLBL.nodes[MAIN.targetNode].x, GLBL.nodes[MAIN.targetNode].y, GLBL.nodes[MAIN.targetNode].z))
 
+                                        SCRIPT.logTripDetails(MAIN.etaInSeconds, MAIN.targetNode)
 
+                                    -- travel to destination
+                                        -- start timer
+                                        MAIN.start_time = os.time()
+                                        -- travel to destination
+                                            travelBot.travelTypePath(MAIN.pathToTarget)
+                                        -- calculate time it took to complete travel
+                                            MAIN.timeDiff = os.difftime(os.time(),MAIN.start_time)
+                                        SCRIPT.slog("You have arrived at \"" .. MAIN.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
 
-                                    GLBL.travelTo_lastTarget = SCRIPT.targetNode
-                                    MAIN.pathTraveled = travelBot.travelTo(SCRIPT.targetNode)
+                                    SCRIPT.arrivalRoutine()
                             else
                                 log("&7[&6TravelBot&7]§f There are currently no known expandable rails")
                             end
                     -- "[Demo Mode] continuously travel to random node"
-                        elseif SCRIPT.targetName == "[Demo Mode] continuously travel to random node" then
+                        elseif MAIN.targetName == "[Demo Mode] continuously travel to random node" then
                             while(true)do
-                                SCRIPT.targetNode = SCRIPT.getRandomNodeName()
-                                travelBot.travelTo(SCRIPT.targetNode)
+                                MAIN.targetNode = SCRIPT.getRandomNodeName()
+                                travelBot.travelTo(MAIN.targetNode)
                             end
                 else
                     -- travel to destination if path available
                         
                         -- get nodeID of target
-                            SCRIPT.targetNode = SCRIPT.destNameToNodeId[SCRIPT.targetName]
-                        -- determine if path to target
-                            SCRIPT.slog("Finding path to destination")
-                            MAIN.pathToTarget, MAIN.etaInSeconds = travelBot.findPathToNode(SCRIPT.targetNode)
-                            if MAIN.pathToTarget == false then
-                                SCRIPT.slog("No known path to target destination")
-                                return 0
-                            end
+                        MAIN.targetNode = SCRIPT.destNameToNodeId[MAIN.targetName]
 
-                        SCRIPT.logTripDetails(MAIN.etaInSeconds, SCRIPT.targetNode)
-
-                        -- store target in GLBL in case travel is stopped and wants to be resumed
-                            GLBL.travelTo_lastTarget = SCRIPT.targetNode
-
-                        -- travel to destination
-                            -- start timer
-                                MAIN.start_time = os.time()
-                            -- travel to destination
-                                travelBot.travelTypePath(MAIN.pathToTarget)
-                            -- calculate time it took to complete travel
-                                MAIN.timeDiff = os.difftime(os.time(),MAIN.start_time)
-                            log("&7[&6TravelBot&7]§f You have arrived at \"" .. SCRIPT.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
-
-                        SCRIPT.arrivalRoutine()
+                        if SCRIPT.attemptTravelTo(MAIN.targetNode) == false then
+                            SCRIPT.slog("No known path to target destination")
+                            return 0
+                        end
                 end
 
                 if MAIN.pathTraveled then
