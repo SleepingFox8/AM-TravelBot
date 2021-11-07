@@ -282,7 +282,7 @@
         -- add path to internal table
             GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = FUNC.tableString
 
-        log("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
+        SCRIPT.slog("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
 
         GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
     end
