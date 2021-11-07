@@ -63,6 +63,30 @@
             return SCRIPT.coordinatesToString(FUNC.x,FUNC.y,FUNC.z)
         end
 
+        function SCRIPT.arrivalRoutine()
+            GLBL.travelTo_travelCanceled = false
+            say("/logout")
+            botTools.disconnectIfAfkForTenSeconds()
+        end
+
+        function SCRIPT.logTripDetails(etaInSeconds, node)
+            --initialize function table
+                local FUNC = {}
+            -- store function args in scope-safe table
+                FUNC.etaInSeconds, FUNC.node = etaInSeconds, node
+
+                -- find node name
+                    if SCRIPT.nodeIdToDestName[FUNC.node] ~= nil then
+                        FUNC.targetName = SCRIPT.nodeIdToDestName[FUNC.node]
+                    else
+                        FUNC.targetName = FUNC.node
+                    end
+                -- format eta
+                    FUNC.etaString = SCRIPT.SecondsToClock(FUNC.etaInSeconds)
+                -- log details
+                    SCRIPT.slog(" Traveling to \"" .. FUNC.targetName .. "\" at " .. SCRIPT.nodeCoordinatesString(SCRIPT.targetNode) .. " ETA: " .. FUNC.etaString)
+        end
+
 -- declaration script wide variables
     --load destinations
         SCRIPT.nodeIdToDestName = nodeTools.loadDestinationsFromJSON()
@@ -143,14 +167,35 @@
 
         if MAIN.resume == true then
 
-            MAIN.pathTraveled = travelBot.travelTo(GLBL.travelTo_lastTarget)
+            SCRIPT.targetNode = GLBL.travelTo_lastTarget
 
-            if MAIN.pathTraveled then
-                GLBL.travelTo_travelCanceled = false
-                say("/logout")
-                botTools.disconnectIfAfkForTenSeconds()
-            end
+            -- find node name
+                if SCRIPT.nodeIdToDestName[SCRIPT.targetNode] ~= nil then
+                    SCRIPT.targetName = SCRIPT.nodeIdToDestName[SCRIPT.targetNode]
+                else
+                    SCRIPT.targetName = SCRIPT.targetNode
+                end
 
+            -- determine if path to target
+                SCRIPT.slog("Finding path to destination")
+                MAIN.pathToTarget, MAIN.etaInSeconds = travelBot.findPathToNode(SCRIPT.targetNode)
+                if MAIN.pathToTarget == false then
+                    SCRIPT.slog("No known path to target destination")
+                    return 0
+                end
+
+            SCRIPT.logTripDetails(MAIN.etaInSeconds, SCRIPT.targetNode)
+
+            -- travel to destination
+                -- start timer
+                MAIN.start_time = os.time()
+                -- travel to destination
+                    travelBot.travelTypePath(MAIN.pathToTarget)
+                -- calculate time it took to complete travel
+                    MAIN.timeDiff = os.difftime(os.time(),MAIN.start_time)
+                SCRIPT.slog("You have arrived at \"" .. SCRIPT.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
+
+            SCRIPT.arrivalRoutine()
         else
 
             -- prompt player to pick destination
@@ -198,18 +243,11 @@
                                 SCRIPT.slog("No known path to target destination")
                                 return 0
                             end
+
+                        SCRIPT.logTripDetails(MAIN.etaInSeconds, SCRIPT.targetNode)
+
                         -- store target in GLBL in case travel is stopped and wants to be resumed
                             GLBL.travelTo_lastTarget = SCRIPT.targetNode
-
-                        -- log trip details
-                            log("MAIN.etaInSeconds" .. MAIN.etaInSeconds)
-                            MAIN.etaString = SCRIPT.SecondsToClock(MAIN.etaInSeconds)
-                            SCRIPT.slog(" Traveling to \"" .. SCRIPT.targetName .. "\" at " .. SCRIPT.nodeCoordinatesString(SCRIPT.targetNode) .. " ETA: " .. MAIN.etaString)
-
-                            -- if SCRIPT.nodeIdToDestName[SCRIPT.targetNode] ~= nil then
-                            -- else
-                            --     log("&7[&6TravelBot&7]§f Traveling to \"" .. SCRIPT.targetNode .. "\" at " .. SCRIPT.nodeCoordinatesString(SCRIPT.targetNode) .. " ETA: " .. MAIN.etaString)
-                            -- end
 
                         -- travel to destination
                             -- start timer
@@ -218,8 +256,9 @@
                                 travelBot.travelTypePath(MAIN.pathToTarget)
                             -- calculate time it took to complete travel
                                 MAIN.timeDiff = os.difftime(os.time(),MAIN.start_time)
+                            log("&7[&6TravelBot&7]§f You have arrived at \"" .. SCRIPT.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
 
-                        log("&7[&6TravelBot&7]§f You have arrived at \"" .. SCRIPT.targetName .. "\" after " .. SCRIPT.SecondsToClock(MAIN.timeDiff))
+                        SCRIPT.arrivalRoutine()
                 end
 
                 if MAIN.pathTraveled then
