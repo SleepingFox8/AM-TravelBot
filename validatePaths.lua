@@ -282,7 +282,7 @@
         -- add path to internal table
             GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = FUNC.tableString
 
-        SCRIPT.slog("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
+        SCRIPT.slog("&dNum validated paths: &f".. SCRIPT.tableKeyCount(GLBL.validatedPaths))
 
         GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
     end
@@ -340,6 +340,9 @@
 
         -- travel to start of nearest unvalidated path
             MAIN.currentNode, _ = SCRIPT.findNearestUnvalidatedPath(MAIN.currentNode)
+            if MAIN.currentNode == false then
+                break
+            end
             SCRIPT.slog("&bTraveling to new path")
             SCRIPT.travelBot.travelTo(MAIN.currentNode)
         
@@ -363,7 +366,54 @@
                     SCRIPT.chartPathBetween(MAIN.currentNode, MAIN.unchartedPathNodes[1])
                     MAIN.currentNode = MAIN.unchartedPathNodes[1]
                 else
-                    MAIN.targetNode = MAIN.unchartedPathNodes[math.random(#MAIN.unchartedPathNodes)]
+
+
+                    -- if a path is a dead end, take it
+                        MAIN.targetNode = false
+                        -- for each possible path
+                        for key,value in pairs(MAIN.unchartedPathNodes) do
+                            -- clarify variable scope
+                            MAIN.node = value
+
+                            MAIN.checkedNodes = {}
+                            MAIN.checkedNodes[MAIN.currentNode] = true
+
+                            -- look down the path until intersection or end.
+                                MAIN.currentPathEndNode = MAIN.node
+                                MAIN.checkedNodes[MAIN.currentPathEndNode] = true
+
+                                while SCRIPT.tableKeyCount(GLBL.nodes[MAIN.currentPathEndNode].connections) == 2 do
+
+
+
+                                    -- find the next node in path
+                                    for key,value in pairs(GLBL.nodes[MAIN.currentPathEndNode].connections) do
+                                        -- clarify variable scope
+                                        MAIN.neighbor = key
+
+                                        if MAIN.checkedNodes[MAIN.neighbor] == nil then
+
+                                            MAIN.currentPathEndNode = MAIN.neighbor
+                                            MAIN.checkedNodes[MAIN.neighbor] = true
+
+                                        end
+                                    end
+                                end
+
+                            -- if dead end
+                            if SCRIPT.tableKeyCount(GLBL.nodes[MAIN.currentPathEndNode].connections) == 1 then
+                                MAIN.targetNode = MAIN.node
+                                break
+                            end
+                        end 
+
+
+                    -- if no dead ends
+                    if MAIN.targetNode == false then
+                        -- choose a random unvalidated path to take
+                        MAIN.targetNode = MAIN.unchartedPathNodes[math.random(#MAIN.unchartedPathNodes)]
+                    end
+
                     SCRIPT.chartPathBetween(MAIN.currentNode, MAIN.targetNode)
                     MAIN.currentNode = MAIN.targetNode
                 end
