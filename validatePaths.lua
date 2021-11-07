@@ -282,7 +282,7 @@
         -- add path to internal table
             GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = FUNC.tableString
 
-        SCRIPT.slog("&dNum validated paths: " , SCRIPT.tableKeyCount(GLBL.validatedPaths))
+        SCRIPT.slog("&dNum validated paths: &f".. SCRIPT.tableKeyCount(GLBL.validatedPaths))
 
         GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
     end
@@ -340,6 +340,9 @@
 
         -- travel to start of nearest unvalidated path
             MAIN.currentNode, _ = SCRIPT.findNearestUnvalidatedPath(MAIN.currentNode)
+            if MAIN.currentNode == false then
+                break
+            end
             SCRIPT.slog("&bTraveling to new path")
             SCRIPT.travelBot.travelTo(MAIN.currentNode)
         
