@@ -99,13 +99,19 @@
         end
 
         --node data
-            function nodeTools.loadNodesfromJSON()
+            function nodeTools.loadNodesfromJSON(forceDownload)
                 --function initialization
                     --initialize function table
                         local FUNC = {}
+                    -- clarify scope of arguments
+                        FUNC.forceDownload = forceDownload or false
 
                 FUNC.player = getPlayer()
-                if GLBL.nodes == nil or GLBL.lastConnectedServerIpForNodes ~= getWorld().ip or GLBL.lastDimensionForNodes ~= FUNC.player.dimension.name then
+                -- log("GLBL.lastConnectedServerIpForNodes: " .. GLBL.lastConnectedServerIpForNodes)
+                -- log("getWorld().ip" .. getWorld().ip)
+                -- log("GLBL.lastDimensionForNodes " .. GLBL.lastDimensionForNodes)
+                -- log("FUNC.player.dimension.name " .. FUNC.player.dimension.name)
+                if GLBL.nodes == nil or GLBL.lastConnectedServerIpForNodes ~= getWorld().ip or GLBL.lastDimensionForNodes ~= FUNC.player.dimension.name or FUNC.forceDownload then
                     log("&7[&6NodeTools&7]§f retrieving nodes for given server/dimension from file...")
                     nodeTools.ensureFileExists(nodeTools.pathToCurrentStorageDir() .. "nodes.json")
                     -- update last world data grabbed from

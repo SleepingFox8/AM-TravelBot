@@ -287,6 +287,17 @@
         GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
     end
 
+    -- may only work on Linux
+    function SCRIPT.fileLastModifiedAt(filePath)
+        --function initialization
+            --initialize function table
+                local FUNC = {}
+            --store arguments in locally scoped table for scope safety
+                FUNC.filePath = filePath
+        
+        return io.popen("stat -c %Y "..filesystem.resolve().. "/" .. FUNC.filePath):read("*a")
+    end
+
 -- toggle this script off if it is already running
     if SCRIPT.compTools.anotherInstanceOfThisScriptIsRunning() then
         SCRIPT.slog("Stopping validation...")
@@ -299,12 +310,26 @@
         -- silently end this script
             return 0
     end
+
+    function SCRIPT.ensureNodesUpdated()
+        --function initialization
+            --initialize function table
+                local FUNC = {}
+
+        FUNC.nodesModifiedTime = SCRIPT.fileLastModifiedAt("./" .. SCRIPT.nodeTools.pathToCurrentStorageDir() .. "nodes.json")
+        if FUNC.nodesModifiedTime > SCRIPT.nodesLastModifiedTime then
+            GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON(true)
+            SCRIPT.nodesLastModifiedTime = FUNC.nodesModifiedTime
+        end
+    end
     
 -- Main program
     --initialize MAIN table
     --Stores variables for just MAIN function
         local MAIN = {}
 
+    -- keep track of last time GLBL.nodes's file was modified
+        SCRIPT.nodesLastModifiedTime = SCRIPT.fileLastModifiedAt("./" .. SCRIPT.nodeTools.pathToCurrentStorageDir() .. "nodes.json")
     -- get GLBL.nodes
         GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON()
 
@@ -345,6 +370,7 @@
             end
             SCRIPT.slog("&bTraveling to new path")
             SCRIPT.travelBot.travelTo(MAIN.currentNode)
+            SCRIPT.ensureNodesUpdated()
         
         -- find uncharted paths connected to player's current node
             MAIN.unchartedPathNodes = {}
@@ -365,6 +391,7 @@
                 if #MAIN.unchartedPathNodes == 1 then
                     SCRIPT.chartPathBetween(MAIN.currentNode, MAIN.unchartedPathNodes[1])
                     MAIN.currentNode = MAIN.unchartedPathNodes[1]
+                    SCRIPT.ensureNodesUpdated()
                 else
 
 
@@ -416,6 +443,7 @@
 
                     SCRIPT.chartPathBetween(MAIN.currentNode, MAIN.targetNode)
                     MAIN.currentNode = MAIN.targetNode
+                    SCRIPT.ensureNodesUpdated()
                 end
 
                 -- find uncharted paths connected to player's current node
