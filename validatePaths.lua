@@ -315,11 +315,18 @@
             --initialize function table
                 local FUNC = {}
 
-        FUNC.nodesModifiedTime = SCRIPT.fileLastModifiedAt("./" .. SCRIPT.nodeTools.pathToCurrentStorageDir() .. "nodes.json")
-        if FUNC.nodesModifiedTime > SCRIPT.nodesLastModifiedTime then
-            GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON(true)
-            SCRIPT.nodesLastModifiedTime = FUNC.nodesModifiedTime
-        end
+        -- ensure nodes initialized at start of script
+            if SCRIPT.nodesLastModifiedTime == nil then
+                SCRIPT.nodesLastModifiedTime = SCRIPT.fileLastModifiedAt("./" .. SCRIPT.nodeTools.pathToCurrentStorageDir() .. "nodes.json")
+                GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON(true)
+            end
+
+        -- Downlaod nodes if file modified since first load
+            FUNC.nodesModifiedTime = SCRIPT.fileLastModifiedAt("./" .. SCRIPT.nodeTools.pathToCurrentStorageDir() .. "nodes.json")
+            if FUNC.nodesModifiedTime > SCRIPT.nodesLastModifiedTime then
+                GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON(true)
+                SCRIPT.nodesLastModifiedTime = FUNC.nodesModifiedTime
+            end
     end
     
 -- Main program
@@ -327,10 +334,7 @@
     --Stores variables for just MAIN function
         local MAIN = {}
 
-    -- keep track of last time GLBL.nodes's file was modified
-        SCRIPT.nodesLastModifiedTime = SCRIPT.fileLastModifiedAt("./" .. SCRIPT.nodeTools.pathToCurrentStorageDir() .. "nodes.json")
-    -- get GLBL.nodes
-        GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON()
+    SCRIPT.ensureNodesUpdated()
 
     GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
     
