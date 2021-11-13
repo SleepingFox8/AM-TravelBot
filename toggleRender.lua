@@ -189,6 +189,11 @@
                     for key,value in pairs(GLBL.nodes) do
                         FUNC.node = key
 
+                        -- don't crash if GLBL.nodes was modified by another thread while this for loop is running.
+                            if GLBL.nodes[FUNC.node] == nil then
+                                break
+                            end
+
                         -- temp catch for nil values
                             if GLBL.nodes == nil then
                                 log("GLBL.nodes is NIL")
@@ -244,6 +249,12 @@
                         --draw line between FUNC.node and it's neighbors
                             for key,value in pairs(GLBL.nodes[FUNC.node]["connections"]) do
                                 FUNC.neighbor = key
+
+                                -- don't crash if GLBL.nodes was modified by another thread while this for loop is running.
+                                    if GLBL.nodes[FUNC.node] == nil then
+                                        break
+                                    end
+
                                 if FUNC.drawnLines[FUNC.neighbor .. FUNC.node] == nil then
                                     -- only consider draw lines that have at least one node within GLBL.minNodeDistance to the player.
                                     -- SCRIPT.nodeTools.pointBetweenPointsAtHorizontalDistance() is computationally intensive on super large worlds
