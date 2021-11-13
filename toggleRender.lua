@@ -188,6 +188,31 @@
                     -- for each node
                     for key,value in pairs(GLBL.nodes) do
                         FUNC.node = key
+
+                        -- temp catch for nil values
+                            if GLBL.nodes == nil then
+                                log("GLBL.nodes is NIL")
+                            end
+                            if FUNC.node == nil then
+                                log("FUNC.node is nil")
+                            end
+                            if GLBL.nodes[FUNC.node] == nil then
+                                log("GLBL.nodes[FUNC.node] is NIL")
+                                log("FUNC.node: ", FUNC.node)
+                            end
+                            if GLBL.nodes[FUNC.node].x == nil then 
+                                log("GLBL.nodes[FUNC.node].x is NIL")
+                            end
+                            if GLBL.nodes[FUNC.node].z == nil then
+                                log("GLBL.nodes[FUNC.node].z is NIL")
+                            end
+                            if SCRIPT.renderDistance == nil then
+                                log("SCRIPT.renderDistance is NIL")
+                            end
+                            if SCRIPT.compTools.playerhorizontalSquareDistanceBetween == nil then
+                                log("SCRIPT.compTools.playerhorizontalSquareDistanceBetween is NIL")
+                            end
+
                         if SCRIPT.compTools.playerhorizontalSquareDistanceBetween(GLBL.nodes[FUNC.node].x, GLBL.nodes[FUNC.node].z) <= SCRIPT.renderDistance then
 
                             -- determine block color
