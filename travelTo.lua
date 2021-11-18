@@ -164,13 +164,13 @@
             -- uncrouch
                 sneak(1)
                 waitTick()
-            log("&7[&6TravelBot&7]§f Traveling was canceled")
+            SCRIPT.slog("Traveling was canceled")
             GLBL.travelTo_travelCanceled = true
             -- silently end this script
                 return 0
         end
 
-    log("&7[&6TravelBot&7]§f Finding nearby nodes or paths to travel from...")
+    SCRIPT.slog("Finding nearby nodes or paths to travel from...")
     if nodeTools.nodeCloseby() or nodeTools.pathCloseby() then
 
         MAIN.resume = false
@@ -189,7 +189,7 @@
             MAIN.resumeRoute = prompt("Resume travel to \""..MAIN.targetName.."\" ?", "choice", table.unpack(MAIN.resumeOptions))
 
             if MAIN.resumeRoute == nil then
-                log("&7[&6TravelBot&7]§f No destination selected. Canceling travel...")
+                SCRIPT.slog("No destination selected. Canceling travel...")
                 return 0
             end
 
@@ -235,7 +235,7 @@
                                         return 0
                                     end
                             else
-                                log("&7[&6TravelBot&7]§f There are currently no known expandable rails")
+                                SCRIPT.slog("There are currently no known expandable rails")
                             end
                     -- "[Demo Mode] continuously travel to random node"
                         elseif MAIN.targetName == "[Demo Mode] continuously travel to random node" then
@@ -262,9 +262,9 @@
                     botTools.disconnectIfAfkForTenSeconds()
                 end
             else
-                log("&7[&6TravelBot&7]§f No destination selected. Canceling travel...")
+                SCRIPT.slog("No destination selected. Canceling travel...")
             end
         end
     else
-        log("&7[&6TravelBot&7]§f No closeby GLBL.nodes to start travel from...")
+        SCRIPT.slog("No closeby GLBL.nodes to start travel from...")
     end
