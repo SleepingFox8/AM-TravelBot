@@ -113,6 +113,7 @@
                 -- start timer
                 FUNC.start_time = os.time()
                 -- travel to destination
+                    GLBL.travelTo_lastTarget = FUNC.targetNode
                     travelBot.travelTypePath(FUNC.pathToTarget)
                 -- calculate time it took to complete travel
                     FUNC.timeDiff = os.difftime(os.time(),FUNC.start_time)
@@ -240,6 +241,7 @@
                         elseif MAIN.targetName == "[Demo Mode] continuously travel to random node" then
                             while(true)do
                                 MAIN.targetNode = SCRIPT.getRandomNodeName()
+                                GLBL.travelTo_lastTarget = FUNC.targetNode
                                 travelBot.travelTo(MAIN.targetNode)
                             end
                 else
