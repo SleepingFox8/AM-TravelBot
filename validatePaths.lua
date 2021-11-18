@@ -37,26 +37,30 @@
             SCRIPT.sprintJumpingRooflessIceSpeed = 9.23
             SCRIPT.sprintJumpingIceSpeed = 16.9
 
+        SCRIPT.loadValidatedMinutes = 2
+        SCRIPT.loadValidatedTimer = (1000 * 60) * SCRIPT.loadValidatedMinutes
+        SCRIPT.compTools.setTimer("loadValidatedPathsFromJson", SCRIPT.loadValidatedTimer)
+
 -- function declarations
 
-    function SCRIPT.saveValidatedPathsToJson(validatedPaths)
-        --function initialization
-            --initialize function table
-                local FUNC = {}
-            --store arguments in locally scoped table for scope safety
-                FUNC.validatedPaths = validatedPaths
+    -- function SCRIPT.saveValidatedPathsToJson(validatedPaths)
+    --     --function initialization
+    --         --initialize function table
+    --             local FUNC = {}
+    --         --store arguments in locally scoped table for scope safety
+    --             FUNC.validatedPaths = validatedPaths
         
-        SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
-        FUNC.jsonValidatedPaths = SCRIPT.json.encode(FUNC.validatedPaths)
+    --     SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+    --     FUNC.jsonValidatedPaths = SCRIPT.json.encode(FUNC.validatedPaths)
 
-        -- opens file
-        FUNC.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "w")
+    --     -- opens file
+    --     FUNC.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "w")
 
-        FUNC.file:write(FUNC.jsonValidatedPaths)
+    --     FUNC.file:write(FUNC.jsonValidatedPaths)
 
-        -- closes file
-        FUNC.file:close()
-    end
+    --     -- closes file
+    --     FUNC.file:close()
+    -- end
 
     -- A* pathfinding related
         function SCRIPT.h(node, goal)
@@ -282,7 +286,11 @@
         -- add path to internal table
             GLBL.validatedPaths[FUNC.startNode..FUNC.endNode] = FUNC.tableString
 
-        GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
+        if SCRIPT.compTools.haveTime("loadValidatedPathsFromJson") == false then
+            SCRIPT.slog("&6Syncing validated paths from file")
+            GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
+            SCRIPT.compTools.setTimer("loadValidatedPathsFromJson", SCRIPT.loadValidatedTimer)
+        end
         SCRIPT.slog("&dNum validated paths: &f".. SCRIPT.tableKeyCount(GLBL.validatedPaths))
     end
 
@@ -299,9 +307,9 @@
 
 -- toggle this script off if it is already running
     if SCRIPT.compTools.anotherInstanceOfThisScriptIsRunning() then
-        SCRIPT.slog("Stopping validation...")
         SCRIPT.compTools.stopOtherInstancesOfThisScript()
         SCRIPT.botTools.freezeAllMotorFunctions()
+        SCRIPT.slog("Stopping validation...")
         -- uncrouch
             sneak(1)
             waitTick()
