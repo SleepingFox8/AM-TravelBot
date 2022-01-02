@@ -43,25 +43,6 @@
 
 -- function declarations
 
-    -- function SCRIPT.saveValidatedPathsToJson(validatedPaths)
-    --     --function initialization
-    --         --initialize function table
-    --             local FUNC = {}
-    --         --store arguments in locally scoped table for scope safety
-    --             FUNC.validatedPaths = validatedPaths
-        
-    --     SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
-    --     FUNC.jsonValidatedPaths = SCRIPT.json.encode(FUNC.validatedPaths)
-
-    --     -- opens file
-    --     FUNC.file = io.open(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json", "w")
-
-    --     FUNC.file:write(FUNC.jsonValidatedPaths)
-
-    --     -- closes file
-    --     FUNC.file:close()
-    -- end
-
     -- A* pathfinding related
         function SCRIPT.h(node, goal)
             return 0
@@ -176,21 +157,23 @@
                     end
                     FUNC.current = FUNC.nameOfLowest
 
-                if FUNC.firstPass == false then
-                    FUNC.forwardsName = FUNC.cameFrom[FUNC.current]..FUNC.current 
-                    FUNC.backwardsName = FUNC.current..FUNC.cameFrom[FUNC.current]
+                -- return current if current has unvalidated paths connected to it
+                    -- for each neighbor of FUNC.current
+                    for key,value in pairs(GLBL.nodes[FUNC.current].connections) do
+                        FUNC.neighbor = key
 
-                    if GLBL.validatedPaths[FUNC.forwardsName] == nil and GLBL.validatedPaths[FUNC.backwardsName] == nil then
-                        -- return nodes who's path has not yet been explored
-                        return FUNC.cameFrom[FUNC.current], FUNC.current 
+                        FUNC.forwardsName = FUNC.neighbor..FUNC.current 
+                        FUNC.backwardsName = FUNC.current..FUNC.neighbor
+                        -- if path between current and neighbor has not been validated
+                        if GLBL.validatedPaths[FUNC.forwardsName] == nil and GLBL.validatedPaths[FUNC.backwardsName] == nil then
+                            -- return nodes who's path has not yet been explored
+                            return FUNC.current, FUNC.neighbor 
+                        end
                     end
-                else
-                    FUNC.firstPass = false
-                end
-
-                -- if FUNC.current == goal then
-                --     return SCRIPT.reconstruct_path(FUNC.cameFrom, FUNC.current)
-                -- end
+                -- single target goal test
+                    -- if FUNC.current == goal then
+                    --     return SCRIPT.reconstruct_path(FUNC.cameFrom, FUNC.current)
+                    -- end
 
                 -- FUNC.openSet.Remove(FUNC.current)
                     FUNC.openSet[FUNC.current] = nil
