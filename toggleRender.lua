@@ -14,6 +14,7 @@
     -- import dependencies
         SCRIPT.compTools = import("./AM-CompTools/compTools")
         SCRIPT.nodeTools = import"nodeTools"
+        SCRIPT.json = import("./json.lua/json")
         
     --initialize GLBL table if needed
         if GLBL == nil then
@@ -94,6 +95,24 @@
         -- SCRIPT.destNameToNodeId = SCRIPT.nodeTools.getDestNameToNodeId(SCRIPT.nodeIdToDestName)
 
 -- functions
+
+    function SCRIPT.replace_char(pos, str, r)
+        return str:sub(1, pos-1) .. r .. str:sub(pos+1)
+    end
+    function SCRIPT.loadValidatedPathsFromJson()
+        --function initialization
+            --initialize function table
+                local FUNC = {}
+
+        -- SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+        SCRIPT.nodeTools.ensureFileExists(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+        FUNC.fileString = SCRIPT.compTools.readAll(SCRIPT.nodeTools.pathToCurrentStorageDir() .. "validatedPaths.json")
+
+        -- turn string to valid JSON
+        FUNC.fileString = "{".. SCRIPT.replace_char(#FUNC.fileString, FUNC.fileString, "}")
+
+        return SCRIPT.json.decode(FUNC.fileString )
+    end
     -- GLBL.rendering
             -- private functions 
                 -- node visualization
@@ -264,23 +283,35 @@
                                         if SCRIPT.compTools.playerhorizontalSquareDistanceBetween(FUNC.lbX, FUNC.lbZ) <= SCRIPT.renderDistance then
                                             FUNC.listOfPoints = SCRIPT.compTools.Bresenham3D(GLBL.nodes[FUNC.node].x,GLBL.nodes[FUNC.node].y,GLBL.nodes[FUNC.node].z,GLBL.nodes[FUNC.neighbor].x,GLBL.nodes[FUNC.neighbor].y,GLBL.nodes[FUNC.neighbor].z)
                                             -- check what color line should be
-                                                -- iceroad
-                                                    if SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "iceroad" then
-                                                        -- iceroad color
-                                                            FUNC.pathColor = SCRIPT.colors.blue
-                                                -- roofless iceroad
-                                                    elseif SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "roofless iceroad" then
-                                                        -- iceroad color
-                                                            FUNC.pathColor = SCRIPT.colors.lightBlue
-                                                -- rail
-                                                    elseif SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "rail" then
-                                                        --rail color
-                                                            FUNC.pathColor = SCRIPT.colors.grey
-                                                -- normal
-                                                    else
-                                                        -- normal color
+                                                if SCRIPT.compTools.givenScriptIsRunning("AM-TravelBot/validatePaths.lua") == true then
+                                                    -- based on validation
+                                                        -- if path validated
+                                                        if GLBL.validatedPaths[FUNC.node..FUNC.neighbor] ~= nil or GLBL.validatedPaths[FUNC.neighbor..FUNC.node] ~= nil then
                                                             FUNC.pathColor = SCRIPT.colors.green
-                                                    end
+                                                        else
+                                                            FUNC.pathColor = SCRIPT.colors.red
+                                                        end
+                                                else
+                                                    -- based on path type
+                                                        -- iceroad
+                                                            if SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "iceroad" then
+                                                                -- iceroad color
+                                                                    FUNC.pathColor = SCRIPT.colors.blue
+                                                        -- roofless iceroad
+                                                            elseif SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "roofless iceroad" then
+                                                                -- iceroad color
+                                                                    FUNC.pathColor = SCRIPT.colors.lightBlue
+                                                        -- rail
+                                                            elseif SCRIPT.nodeTools.getPathTypeFromNodeTypes(GLBL.nodes[FUNC.node].pathType, GLBL.nodes[FUNC.neighbor].pathType) == "rail" then
+                                                                --rail color
+                                                                    FUNC.pathColor = SCRIPT.colors.grey
+                                                        -- normal
+                                                            else
+                                                                -- normal color
+                                                                    FUNC.pathColor = SCRIPT.colors.green
+                                                            end
+                                                end
+
                                             prepairPoints(FUNC.listOfPoints, FUNC.pathColor)
                                             FUNC.drawnLines[FUNC.node .. FUNC.neighbor] = true
                                             --spawn red block at closest point on all lines to player
@@ -334,6 +365,10 @@
 
     -- GLBL.zoneData = SCRIPT.nodeTools.getZoneData()
     GLBL.nodes = SCRIPT.nodeTools.loadNodesfromJSON()
+
+    if GLBL.validatedPaths == nil then
+        GLBL.validatedPaths = SCRIPT.loadValidatedPathsFromJson()
+    end
 
     -- initialize GUI table
         GLBL.GUI = GLBL.GUI or {}
