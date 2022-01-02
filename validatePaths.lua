@@ -109,6 +109,29 @@
             return FUNC.count
         end
 
+        function SCRIPT.numUnvalidatedPaths(node)
+            --initialize function
+                --initialize function table
+                    local FUNC = {}
+                --store arguments in known scoped table
+                    FUNC.node = node
+
+            FUNC.unvalidatedPaths = 0
+
+            for key,value in pairs(GLBL.nodes[FUNC.node].connections) do
+                FUNC.neighbor = key
+
+                FUNC.forwardsName = FUNC.neighbor..FUNC.node
+                FUNC.backwardsName = FUNC.node..FUNC.neighbor
+                -- if path between node and neighbor has not been validated
+                if GLBL.validatedPaths[FUNC.forwardsName] == nil and GLBL.validatedPaths[FUNC.backwardsName] == nil then
+                    -- return nodes who's path has not yet been explored
+                    FUNC.unvalidatedPaths = FUNC.unvalidatedPaths + 1
+                end
+            end
+            return FUNC.unvalidatedPaths
+        end
+
         function SCRIPT.findNearestUnvalidatedPath(start)
             --initialize function table
                 local FUNC = {}
@@ -391,6 +414,7 @@
 
                     -- if a path is a dead end, take it
                         MAIN.targetNode = false
+                        MAIN.validationDeadEnd = {}
                         -- for each possible path
                         for key,value in pairs(MAIN.unchartedPathNodes) do
                             -- clarify variable scope
@@ -403,16 +427,16 @@
                                 MAIN.currentPathEndNode = MAIN.node
                                 MAIN.checkedNodes[MAIN.currentPathEndNode] = true
 
-                                while SCRIPT.tableKeyCount(GLBL.nodes[MAIN.currentPathEndNode].connections) == 2 do
-
-
+                                -- while MAIN.currentPathEndNode unvalidated paths == 2
+                                while SCRIPT.numUnvalidatedPaths(MAIN.currentPathEndNode) == 2 do
+                                -- while SCRIPT.tableKeyCount(GLBL.nodes[MAIN.currentPathEndNode].connections) == 2 do
 
                                     -- find the next node in path
                                     for key,value in pairs(GLBL.nodes[MAIN.currentPathEndNode].connections) do
                                         -- clarify variable scope
                                         MAIN.neighbor = key
 
-                                        if MAIN.checkedNodes[MAIN.neighbor] == nil then
+                                        if MAIN.checkedNodes[MAIN.neighbor] == nil and SCRIPT.numUnvalidatedPaths(MAIN.neighbor) > 0 then
 
                                             MAIN.currentPathEndNode = MAIN.neighbor
                                             MAIN.checkedNodes[MAIN.neighbor] = true
@@ -422,11 +446,20 @@
                                 end
 
                             -- if dead end
-                            if SCRIPT.tableKeyCount(GLBL.nodes[MAIN.currentPathEndNode].connections) == 1 then
-                                MAIN.targetNode = MAIN.node
-                                break
+                                if SCRIPT.tableKeyCount(GLBL.nodes[MAIN.currentPathEndNode].connections) == 1 then
+                                    MAIN.targetNode = MAIN.node
+                                    break
+                                end
+                            -- if validation dead end
+                            if SCRIPT.numUnvalidatedPaths(MAIN.currentPathEndNode) == 1 then
+                                table.insert(MAIN.validationDeadEnd, MAIN.node)
                             end
+
                         end 
+
+                        if MAIN.targetNode == false and #MAIN.validationDeadEnd > 0 then
+                            MAIN.targetNode = MAIN.validationDeadEnd[1]
+                        end
 
 
                     -- if no dead ends
@@ -454,6 +487,6 @@
             end
     end
 
-    SCRIPT.slog("Path validation completed...")
+    SCRIPT.slog("&2Path validation completed...")
 
     
