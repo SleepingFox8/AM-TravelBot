@@ -36,16 +36,6 @@ A small red cube. Signifies a named node destination that is able to be selected
 ### Selected Node
 
 A medium yellow cube. Signifies that the node is currently selected. The currently selected node is used by path notators to modify nodes and paths.
-
-## 2D HUD
-
-TravelBot displays some information about the world in a 2D HUD at the top left of the user's screen.
-
-![](https://i.imgur.com/BNxmOAj.png)
-
-### Current Location
-
-The ``zones.json`` file for the given world is where zoning information is stored. TravelBot will display the name of any zone the player is inside of. If the player is not in any known zone then ``Unknown`` will be displayed.
  
 ## Usage
 
@@ -60,7 +50,7 @@ if they intend to notate paths of their own, users should also use Advanced Macr
 
 ### Travel
 
-- ``toggleRender.lua`` will toggle a 3D hud which visualizes all nodes and paths in a 100 block horizontal square around the player, as well as enable a 2D HUD that displays the name of the zone the player is currently inside of. Pressing ``toggleRender.lua`` multiple times will cycle between normal visualization of 3D hud paths, Xrayed vision of 3D hud paths, and hidding all HUD items.
+- ``toggleRender.lua`` will toggle a 3D hud which visualizes all nodes and paths in a 100 block horizontal square around the player. Pressing ``toggleRender.lua`` multiple times will cycle between normal visualization of 3D hud paths, Xrayed vision of 3D hud paths, and hidding all HUD items.
 
 - ``travelTo.lua`` will check if there is a nearby path or node within 10 block walking distance, and present the user with a list of destinations to travel to from there. Currently all known destinations are displayed and as a result, some destinations will not be travlable to if there is no known path to it. If there is not a nearby path or node within 10 block walking distance ``travelTo.lua`` will refuse to run. As such, it is recommended to turn on ``toggleRender.lua`` in order to find nearby paths or nodes before running ``travelTo.lua``
 
